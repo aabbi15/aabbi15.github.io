@@ -1,0 +1,290 @@
+{
+    "Sandwich": [
+        {
+            "name": "Corn Sandwich",
+            "price": "₹42.00"
+        },
+        {
+            "name": "Butter Bread Jam",
+            "price": "₹30.00"
+        },
+        {
+            "name": "Corn Cheese Sandwich",
+            "price": "₹53.00"
+        },
+        {
+            "name": "Tomato Cheese Sandwich",
+            "price": "₹47.00"
+        },
+        {
+            "name": "Veg Cheese Sandwich",
+            "price": "₹53.00"
+        },
+        {
+            "name": "Veg Sandwich",
+            "price": "₹42.00"
+        },
+        {
+            "name": "Extra Cheese",
+            "price": "₹11.00"
+        }
+    ],
+    "Bakery Items": [
+        {
+            "name": "Veg Cutlet",
+            "price": "₹24.00"
+        },
+        {
+            "name": "Pastry",
+            "price": "₹61.00"
+        },
+        {
+            "name": "Brownie",
+            "price": "₹71.00"
+        },
+        {
+            "name": "parcel charge",
+            "price": "₹5.00"
+        },
+        {
+            "name": "Parcel charge",
+            "price": "₹3.00"
+        }
+    ],
+    "Healthy Bites": [
+        {
+            "name": "Juice ABC",
+            "price": "₹59.00"
+        },
+        {
+            "name": "Butter Milk",
+            "price": "₹16.00"
+        },
+        {
+            "name": "Fruit Bowl",
+            "price": "₹51.00"
+        },
+        {
+            "name": "White Pumpkin Juice",
+            "price": "₹35.00"
+        }
+    ],
+    "Hot Beverages": [
+        {
+            "name": "Badam Milk",
+            "price": "₹18.00"
+        },
+        {
+            "name": "Bournvita",
+            "price": "₹18.00"
+        },
+        {
+            "name": "Boost",
+            "price": "₹18.00"
+        },
+        {
+            "name": "Horlicks",
+            "price": "₹18.00"
+        },
+        {
+            "name": "Bullet Coffee",
+            "price": "₹17.00"
+        },
+        {
+            "name": "Ooty Kashaya",
+            "price": "₹18.00"
+        },
+        {
+            "name": "Tea With Honey",
+            "price": "₹18.00"
+        },
+        {
+            "name": "Shunti Coffee",
+            "price": "₹15.00"
+        },
+        {
+            "name": "Filter Coffe",
+            "price": "₹15.00"
+        },
+        {
+            "name": "Lemon Tea",
+            "price": "₹12.00"
+        },
+        {
+            "name": "Ginger Tea",
+            "price": "₹13.00"
+        },
+        {
+            "name": "Green Tea",
+            "price": "₹12.00"
+        },
+        {
+            "name": "Filter coffee",
+            "price": "₹15.00"
+        },
+        {
+            "name": "Black coffee",
+            "price": "₹15.00"
+        },
+        {
+            "name": "Jaggery Coffee",
+            "price": "₹17.00"
+        }
+    ],
+    "Fresh Juice": [
+        {
+            "name": "Fresh Orange Juice",
+            "price": "₹35.00"
+        },
+        {
+            "name": "Lemon Soda",
+            "price": "₹37.00"
+        },
+        {
+            "name": "Lemon Juice",
+            "price": "₹16.00"
+        },
+        {
+            "name": "Pineapple Juice",
+            "price": "₹35.00"
+        },
+        {
+            "name": "Pappaya Juice",
+            "price": "₹35.00"
+        },
+        {
+            "name": "Mixed Fruit Juice",
+            "price": "₹35.00"
+        },
+        {
+            "name": "Mosambi Juice",
+            "price": "₹35.00"
+        },
+        {
+            "name": "Mask Melon Juice",
+            "price": "₹35.00"
+        },
+        {
+            "name": "Grape Juice",
+            "price": "₹35.00"
+        },
+        {
+            "name": "Water Melon Juice",
+            "price": "₹35.00"
+        },
+        {
+            "name": "Fruit Lassi",
+            "price": "₹45.00"
+        },
+        {
+            "name": "Chia seeds",
+            "price": "₹5.00"
+        }
+    ],
+    "Milk Shake": [
+        {
+            "name": "Guava Milk Shake",
+            "price": "₹47.00"
+        },
+        {
+            "name": "Dragon Fruit Milk Shake",
+            "price": "₹82.00"
+        },
+        {
+            "name": "Dates milk shake",
+            "price": "₹64.00"
+        },
+        {
+            "name": "Musk Melon Milk Shake",
+            "price": "₹47.00"
+        },
+        {
+            "name": "Pappaya Milkshake",
+            "price": "₹47.00"
+        },
+        {
+            "name": "Chikku Milkshake",
+            "price": "₹47.00"
+        },
+        {
+            "name": "Banana Milkshake",
+            "price": "₹47.00"
+        },
+        {
+            "name": "Strawberry Delight",
+            "price": "₹55.00"
+        }
+    ],
+    "Lassi": [
+        {
+            "name": "Fruit Lassi",
+            "price": "₹45.00"
+        }
+    ],
+    "Non veg": [
+        {
+            "name": "Egg Cheese Sandwich",
+            "price": "₹56.00"
+        },
+        {
+            "name": "Chicken Sandwich With Cheese",
+            "price": "₹82.00"
+        },
+        {
+            "name": "Egg Sandwich",
+            "price": "₹45.00"
+        },
+        {
+            "name": "Boiled egg",
+            "price": "₹12.00"
+        }
+    ],
+    "Nonveg-Bakery Items": [
+        {
+            "name": "Fruit Cake",
+            "price": "₹47.00"
+        },
+        {
+            "name": "Dates Walnut",
+            "price": "₹47.00"
+        },
+        {
+            "name": "Banana Walnut",
+            "price": "₹47.00"
+        },
+        {
+            "name": "Chocolate Dount",
+            "price": "₹42.00"
+        },
+        {
+            "name": "Chocolate muffin",
+            "price": "₹42.00"
+        }
+    ],
+    "Mrp": [
+        {
+            "name": "Mrp 100",
+            "price": "₹100.00"
+        },
+        {
+            "name": "Mrp 50",
+            "price": "₹50.00"
+        },
+        {
+            "name": "Mrp 20",
+            "price": "₹20.00"
+        },
+        {
+            "name": "MRP10",
+            "price": "₹10.00"
+        },
+        {
+            "name": "MRP5",
+            "price": "₹5.00"
+        },
+        {
+            "name": "MRP 1",
+            "price": "₹1.00"
+        }
+    ]
+}
