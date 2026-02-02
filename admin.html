@@ -172,6 +172,27 @@
             font-weight: 600;
         }
 
+        /* Names/Orders column */
+        .orders-list {
+            max-width: 200px;
+        }
+
+        .order-badge {
+            display: inline-block;
+            background: #2a2a4a;
+            color: #3498db;
+            padding: 4px 10px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            margin: 2px;
+            border: 1px solid #3a3a5a;
+        }
+
+        .order-badge .qty {
+            color: #f39c12;
+            font-weight: 600;
+        }
+
         .remove-btn {
             background: #e74c3c;
             color: white;
@@ -257,23 +278,304 @@
             cursor: pointer;
         }
 
-        @media (max-width: 600px) {
+        /* Category Management */
+        .categories-section {
+            background: #16213e;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .category-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .category-toggle {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #1a1a2e;
+            padding: 12px 15px;
+            border-radius: 8px;
+            border: 1px solid #2a2a4a;
+            transition: all 0.2s;
+        }
+
+        .category-toggle.disabled {
+            opacity: 0.5;
+        }
+
+        .category-toggle:hover {
+            border-color: #3498db;
+        }
+
+        .category-toggle label {
+            cursor: pointer;
+            font-size: 0.9rem;
+            flex: 1;
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 50px;
+            height: 26px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #e74c3c;
+            transition: 0.3s;
+            border-radius: 26px;
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 20px;
+            width: 20px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: 0.3s;
+            border-radius: 50%;
+        }
+
+        .toggle-switch input:checked + .toggle-slider {
+            background-color: #2ecc71;
+        }
+
+        .toggle-switch input:checked + .toggle-slider:before {
+            transform: translateX(24px);
+        }
+
+        .category-status {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            margin-left: 10px;
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+        .category-status.visible {
+            background: #2ecc71;
+            color: white;
+        }
+
+        .category-status.hidden {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .toggle-all-btn {
+            background: #9b59b6;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            margin-left: auto;
+        }
+
+        .toggle-all-btn:hover {
+            background: #8e44ad;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 15px;
+            }
+
             header {
                 flex-direction: column;
+                align-items: stretch;
+            }
+
+            h1 {
+                font-size: 1.4rem;
+                text-align: center;
+            }
+
+            .header-actions {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .header-actions a,
+            .header-actions button {
+                flex: 1;
+                min-width: 100px;
+                text-align: center;
+                padding: 12px 15px;
+            }
+
+            .stats {
+                grid-template-columns: 1fr 1fr 1fr;
+                gap: 10px;
+            }
+
+            .stat-card {
+                padding: 15px 10px;
+            }
+
+            .stat-value {
+                font-size: 1.5rem;
+            }
+
+            .stat-label {
+                font-size: 0.75rem;
+            }
+
+            .cart-section {
+                padding: 15px;
+            }
+
+            .section-title {
+                font-size: 1.1rem;
+            }
+
+            /* Convert table to card layout on mobile */
+            table, thead, tbody, th, td, tr {
+                display: block;
+            }
+
+            thead {
+                display: none;
+            }
+
+            tr {
+                background: #1a1a2e;
+                margin-bottom: 15px;
+                border-radius: 10px;
+                padding: 15px;
+                border: 1px solid #2a2a4a;
+            }
+
+            tr.total-row {
+                background: #0f0f1a;
+                border: 2px solid #f39c12;
+            }
+
+            td {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 8px 0;
+                border-bottom: 1px solid #2a2a4a;
+            }
+
+            td:last-child {
+                border-bottom: none;
+                padding-top: 12px;
+            }
+
+            td::before {
+                content: attr(data-label);
+                font-weight: 600;
+                color: #888;
+                font-size: 0.8rem;
+                text-transform: uppercase;
+            }
+
+            td.item-name {
+                font-size: 1rem;
+            }
+
+            td.orders-list {
+                flex-direction: column;
                 align-items: flex-start;
+                gap: 8px;
             }
 
-            table {
-                font-size: 0.85rem;
+            td.orders-list::before {
+                margin-bottom: 5px;
             }
 
-            th, td {
-                padding: 10px 8px;
+            .orders-list {
+                max-width: 100%;
+            }
+
+            .order-badge {
+                font-size: 0.75rem;
+                padding: 5px 10px;
             }
 
             .remove-btn {
-                padding: 5px 10px;
-                font-size: 0.75rem;
+                width: 100%;
+                padding: 12px;
+                font-size: 0.9rem;
+            }
+
+            .total-row td {
+                justify-content: center;
+                font-size: 1.1rem;
+            }
+
+            .auto-refresh {
+                justify-content: center;
+                margin-bottom: 15px;
+            }
+
+            .category-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .category-toggle {
+                padding: 15px;
+            }
+
+            .section-header {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .toggle-all-btn {
+                width: 100%;
+                margin-left: 0;
+            }
+        }
+
+        @media (max-width: 400px) {
+            .stats {
+                grid-template-columns: 1fr;
+            }
+
+            .stat-card {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+
+            .stat-value {
+                font-size: 1.3rem;
+            }
+
+            .header-actions a,
+            .header-actions button {
+                padding: 10px 12px;
+                font-size: 0.85rem;
             }
         }
     </style>
@@ -307,8 +609,19 @@
 
         <!-- Auto Refresh -->
         <div class="auto-refresh">
-            <input type="checkbox" id="auto-refresh" checked>
+            <input type="checkbox" id="auto-refresh">
             <label for="auto-refresh">Auto-refresh every 5 seconds</label>
+        </div>
+
+        <!-- Category Management -->
+        <div class="categories-section">
+            <div class="section-header">
+                <h2 class="section-title">📋 Menu Categories</h2>
+                <button class="toggle-all-btn" onclick="toggleAllCategories()">Toggle All</button>
+            </div>
+            <div class="category-grid" id="category-grid">
+                <div class="loading">Loading categories...</div>
+            </div>
         </div>
 
         <!-- Cart Table -->
@@ -333,8 +646,21 @@
             BASE_URL: "https://api.jsonbin.io/v3/b"
         };
 
-        let cartData = { items: [], lastUpdated: null };
+        let cartData = { items: [], lastUpdated: null, visibleCategories: {} };
         let autoRefreshInterval = null;
+
+        // All menu categories
+        const allCategories = [
+            "Sandwich",
+            "Bakery Items",
+            "Healthy Bites",
+            "Hot Beverages",
+            "Fresh Juice",
+            "Milk Shake",
+            "Lassi",
+            "Non Veg",
+            "Non-Veg Bakery Items"
+        ];
 
         // Show status message
         function showStatus(message) {
@@ -365,9 +691,19 @@
                 
                 if (response.ok) {
                     const data = await response.json();
-                    cartData = data.record || { items: [], lastUpdated: Date.now() };
+                    cartData = data.record || { items: [], lastUpdated: Date.now(), visibleCategories: {} };
                     if (!cartData.items) cartData.items = [];
+                    if (!cartData.visibleCategories) cartData.visibleCategories = {};
+                    
+                    // Initialize all categories as visible if not set
+                    allCategories.forEach(cat => {
+                        if (cartData.visibleCategories[cat] === undefined) {
+                            cartData.visibleCategories[cat] = true;
+                        }
+                    });
+                    
                     renderCart();
+                    renderCategories();
                     updateStats();
                     updateLastUpdated();
                 }
@@ -465,13 +801,27 @@
                 const itemTotal = parsePrice(item.price) * item.qty;
                 total += itemTotal;
                 
+                // Build orders/names list
+                let ordersHtml = '-';
+                if (item.orders && item.orders.length > 0) {
+                    // Group by user
+                    const userCounts = {};
+                    item.orders.forEach(o => {
+                        userCounts[o.user] = (userCounts[o.user] || 0) + 1;
+                    });
+                    ordersHtml = Object.entries(userCounts).map(([user, count]) => {
+                        return `<span class="order-badge">${user}${count > 1 ? ' <span class="qty">×' + count + '</span>' : ''}</span>`;
+                    }).join('');
+                }
+                
                 rows += `
                     <tr>
-                        <td class="item-name">${item.name}</td>
-                        <td class="item-price">${item.price}</td>
-                        <td><span class="item-qty">${item.qty}</span></td>
-                        <td class="item-total">${formatPrice(itemTotal)}</td>
-                        <td>
+                        <td class="item-name" data-label="Item">${item.name}</td>
+                        <td class="item-price" data-label="Price">${item.price}</td>
+                        <td data-label="Qty"><span class="item-qty">${item.qty}</span></td>
+                        <td class="orders-list" data-label="Ordered By">${ordersHtml}</td>
+                        <td class="item-total" data-label="Total">${formatPrice(itemTotal)}</td>
+                        <td data-label="">
                             <button class="remove-btn" onclick="removeItem('${item.name}')">Remove</button>
                         </td>
                     </tr>
@@ -485,6 +835,7 @@
                             <th>Item</th>
                             <th>Price</th>
                             <th>Qty</th>
+                            <th>Ordered By</th>
                             <th>Total</th>
                             <th>Action</th>
                         </tr>
@@ -492,12 +843,65 @@
                     <tbody>
                         ${rows}
                         <tr class="total-row">
-                            <td colspan="3"><strong>Grand Total</strong></td>
+                            <td colspan="4"><strong>Grand Total</strong></td>
                             <td colspan="2">${formatPrice(total)}</td>
                         </tr>
                     </tbody>
                 </table>
             `;
+        }
+
+        // Render category toggles
+        function renderCategories() {
+            const container = document.getElementById('category-grid');
+            
+            let html = '';
+            allCategories.forEach(category => {
+                const isVisible = cartData.visibleCategories[category] !== false;
+                const statusClass = isVisible ? 'visible' : 'hidden';
+                const statusText = isVisible ? 'ON' : 'OFF';
+                
+                html += `
+                    <div class="category-toggle ${isVisible ? '' : 'disabled'}">
+                        <label for="cat-${category.replace(/\s+/g, '-')}">
+                            ${category}
+                            <span class="category-status ${statusClass}">${statusText}</span>
+                        </label>
+                        <div class="toggle-switch">
+                            <input type="checkbox" 
+                                   id="cat-${category.replace(/\s+/g, '-')}" 
+                                   ${isVisible ? 'checked' : ''}
+                                   onchange="toggleCategory('${category}')">
+                            <span class="toggle-slider"></span>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+        }
+
+        // Toggle single category visibility
+        async function toggleCategory(category) {
+            cartData.visibleCategories[category] = !cartData.visibleCategories[category];
+            renderCategories();
+            await saveCart();
+            showStatus(`${category} ${cartData.visibleCategories[category] ? 'enabled' : 'disabled'}`);
+        }
+
+        // Toggle all categories
+        async function toggleAllCategories() {
+            // Check if most are visible
+            const visibleCount = allCategories.filter(cat => cartData.visibleCategories[cat] !== false).length;
+            const shouldDisable = visibleCount > allCategories.length / 2;
+            
+            allCategories.forEach(cat => {
+                cartData.visibleCategories[cat] = !shouldDisable;
+            });
+            
+            renderCategories();
+            await saveCart();
+            showStatus(shouldDisable ? 'All categories disabled' : 'All categories enabled');
         }
 
         // Toggle auto-refresh

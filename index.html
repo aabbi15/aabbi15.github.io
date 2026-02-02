@@ -294,33 +294,287 @@
             display: block;
         }
 
+        /* Name Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            display: none;
+        }
+
+        .modal-overlay.show {
+            display: flex;
+        }
+
+        .modal {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal h2 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .modal p {
+            color: #666;
+            margin-bottom: 20px;
+            font-size: 0.95rem;
+        }
+
+        .modal input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            margin-bottom: 15px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .modal input:focus {
+            border-color: #3498db;
+        }
+
+        .modal button {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .modal button:hover {
+            background: #2980b9;
+        }
+
+        .modal button:disabled {
+            background: #95a5a6;
+            cursor: not-allowed;
+        }
+
+        /* User greeting */
+        .user-greeting {
+            text-align: center;
+            margin-bottom: 20px;
+            padding: 10px;
+            background: #e8f4fd;
+            border-radius: 8px;
+            color: #2980b9;
+            font-weight: 600;
+        }
+
+        .user-greeting span {
+            color: #e74c3c;
+        }
+
+        .change-name {
+            background: none;
+            border: none;
+            color: #3498db;
+            cursor: pointer;
+            font-size: 0.85rem;
+            text-decoration: underline;
+            margin-left: 10px;
+        }
+
+        /* Names list in cart */
+        .cart-item-names {
+            font-size: 0.8rem;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .name-badge {
+            display: inline-block;
+            background: #e8f4fd;
+            color: #2980b9;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            margin: 2px;
+        }
+
+        .name-badge.me {
+            background: #fdeaea;
+            color: #e74c3c;
+        }
+
         @media (max-width: 600px) {
+            body {
+                padding: 10px;
+                padding-top: 60px;
+                padding-bottom: 100px;
+            }
+
+            h1 {
+                font-size: 1.5rem;
+                margin-bottom: 20px;
+            }
+
+            .category {
+                margin-bottom: 25px;
+            }
+
+            .category-title {
+                font-size: 1.2rem;
+            }
+
             .items-grid {
-                grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+                grid-template-columns: repeat(2, 1fr);
                 gap: 10px;
             }
 
             .item-box {
-                padding: 10px;
+                padding: 12px;
+                aspect-ratio: auto;
+                min-height: 130px;
             }
 
             .item-name {
                 font-size: 0.8rem;
+                margin-bottom: 5px;
             }
 
             .item-price {
                 font-size: 0.9rem;
+                margin-bottom: 8px;
+            }
+
+            .add-btn {
+                padding: 10px 14px;
+                font-size: 0.8rem;
+                min-height: 44px;
             }
 
             .cart-sidebar {
                 width: 100%;
+                padding: 15px;
+            }
+
+            .cart-header h2 {
+                font-size: 1.1rem;
+            }
+
+            .close-cart {
+                font-size: 2rem;
+                padding: 5px 10px;
+            }
+
+            .cart-item {
+                padding: 10px 0;
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+
+            .cart-item-qty {
+                align-self: flex-end;
+            }
+
+            .qty-btn {
+                width: 36px;
+                height: 36px;
+                font-size: 1.2rem;
             }
 
             .admin-link {
                 top: 10px;
                 right: 10px;
-                padding: 8px 15px;
+                padding: 8px 12px;
+                font-size: 0.75rem;
+            }
+
+            .cart-toggle {
+                padding: 12px 18px;
+                font-size: 0.9rem;
+                bottom: 15px;
+                right: 15px;
+            }
+
+            .modal {
+                padding: 25px 20px;
+                margin: 15px;
+                width: calc(100% - 30px);
+            }
+
+            .modal h2 {
+                font-size: 1.3rem;
+            }
+
+            .modal input {
+                padding: 14px 15px;
+                font-size: 16px; /* Prevents zoom on iOS */
+            }
+
+            .modal button {
+                padding: 14px 30px;
+                width: 100%;
+            }
+
+            .user-greeting {
                 font-size: 0.85rem;
+                padding: 8px;
+            }
+
+            .refresh-btn {
+                padding: 12px 15px;
+                font-size: 0.9rem;
+            }
+
+            .status {
+                bottom: 70px;
+                font-size: 0.85rem;
+                padding: 8px 15px;
+                max-width: 90%;
+            }
+
+            .cart-total {
+                font-size: 1.1rem;
+            }
+
+            .name-badge {
+                font-size: 0.7rem;
+                padding: 2px 6px;
+            }
+        }
+
+        /* Extra small devices */
+        @media (max-width: 360px) {
+            .items-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 8px;
+            }
+
+            .item-box {
+                min-height: 120px;
+                padding: 10px;
+            }
+
+            .item-name {
+                font-size: 0.75rem;
+            }
+
+            .add-btn {
+                padding: 8px 10px;
+                font-size: 0.75rem;
             }
         }
     </style>
@@ -344,6 +598,10 @@
             <h2>🛒 Shared Cart</h2>
             <button class="close-cart" onclick="toggleCart()">×</button>
         </div>
+        <div class="user-greeting" id="user-greeting" style="display: none;">
+            Ordering as: <span id="display-name"></span>
+            <button class="change-name" onclick="showNameModal()">Change</button>
+        </div>
         <button class="refresh-btn" onclick="loadCart()">🔄 Refresh Cart</button>
         <div class="cart-items" id="cart-items">
             <div class="cart-empty">Cart is empty</div>
@@ -351,6 +609,16 @@
         <div class="cart-total" id="cart-total" style="display: none;">
             <span>Total:</span>
             <span id="total-amount">₹0.00</span>
+        </div>
+    </div>
+
+    <!-- Name Modal -->
+    <div class="modal-overlay" id="name-modal">
+        <div class="modal">
+            <h2>👋 Welcome!</h2>
+            <p>Please enter your name to start ordering</p>
+            <input type="text" id="name-input" placeholder="Your name" maxlength="20">
+            <button id="save-name-btn" onclick="saveName()" disabled>Continue</button>
         </div>
     </div>
 
@@ -445,7 +713,56 @@
         };
 
         // Current cart state
-        let cartData = { items: [], lastUpdated: Date.now() };
+        let cartData = { items: [], lastUpdated: Date.now(), visibleCategories: {} };
+        let userName = sessionStorage.getItem('userName') || '';
+
+        // Name modal functions
+        function showNameModal() {
+            document.getElementById('name-modal').classList.add('show');
+            document.getElementById('name-input').value = userName;
+            document.getElementById('name-input').focus();
+            updateSaveButton();
+        }
+
+        function hideNameModal() {
+            document.getElementById('name-modal').classList.remove('show');
+        }
+
+        function saveName() {
+            const name = document.getElementById('name-input').value.trim();
+            if (name) {
+                userName = name;
+                sessionStorage.setItem('userName', userName);
+                hideNameModal();
+                updateUserGreeting();
+                showStatus(`Welcome, ${userName}!`);
+            }
+        }
+
+        function updateSaveButton() {
+            const input = document.getElementById('name-input');
+            const btn = document.getElementById('save-name-btn');
+            btn.disabled = !input.value.trim();
+        }
+
+        function updateUserGreeting() {
+            const greetingEl = document.getElementById('user-greeting');
+            const displayNameEl = document.getElementById('display-name');
+            if (userName) {
+                displayNameEl.textContent = userName;
+                greetingEl.style.display = 'block';
+            } else {
+                greetingEl.style.display = 'none';
+            }
+        }
+
+        function checkUserName() {
+            if (!userName) {
+                showNameModal();
+                return false;
+            }
+            return true;
+        }
 
         // Show status message
         function showStatus(message) {
@@ -481,9 +798,11 @@
                 
                 if (response.ok) {
                     const data = await response.json();
-                    cartData = data.record || { items: [], lastUpdated: Date.now() };
+                    cartData = data.record || { items: [], lastUpdated: Date.now(), visibleCategories: {} };
                     if (!cartData.items) cartData.items = [];
+                    if (!cartData.visibleCategories) cartData.visibleCategories = {};
                     renderCart();
+                    renderMenu(menuData); // Re-render menu with visibility settings
                     showStatus('Cart loaded!');
                 }
             } catch (error) {
@@ -515,26 +834,54 @@
         }
 
         // Add item to cart
-        async function addToCart(name, price) {
-            const existingItem = cartData.items.find(item => item.name === name);
+        async function addToCart(itemName, price) {
+            if (!checkUserName()) return;
+            
+            const existingItem = cartData.items.find(item => item.name === itemName);
             
             if (existingItem) {
                 existingItem.qty += 1;
+                // Add user to the orders list
+                if (!existingItem.orders) existingItem.orders = [];
+                existingItem.orders.push({ user: userName, qty: 1, time: Date.now() });
             } else {
-                cartData.items.push({ name, price, qty: 1 });
+                cartData.items.push({ 
+                    name: itemName, 
+                    price, 
+                    qty: 1,
+                    orders: [{ user: userName, qty: 1, time: Date.now() }]
+                });
             }
             
             renderCart();
             await saveCart();
+            showStatus(`${itemName} added!`);
         }
 
         // Update item quantity
-        async function updateQty(name, delta) {
-            const item = cartData.items.find(i => i.name === name);
+        async function updateQty(itemName, delta) {
+            if (!checkUserName()) return;
+            
+            const item = cartData.items.find(i => i.name === itemName);
             if (item) {
                 item.qty += delta;
+                
+                // Track who made the change
+                if (!item.orders) item.orders = [];
+                if (delta > 0) {
+                    item.orders.push({ user: userName, qty: 1, time: Date.now() });
+                } else {
+                    // Remove one order from this user if possible
+                    const userOrderIdx = item.orders.findIndex(o => o.user === userName);
+                    if (userOrderIdx !== -1) {
+                        item.orders.splice(userOrderIdx, 1);
+                    } else if (item.orders.length > 0) {
+                        item.orders.pop(); // Remove last order
+                    }
+                }
+                
                 if (item.qty <= 0) {
-                    cartData.items = cartData.items.filter(i => i.name !== name);
+                    cartData.items = cartData.items.filter(i => i.name !== itemName);
                 }
                 renderCart();
                 await saveCart();
@@ -564,11 +911,27 @@
                 const itemTotal = parsePrice(item.price) * item.qty;
                 total += itemTotal;
                 
+                // Build names list
+                let namesHtml = '';
+                if (item.orders && item.orders.length > 0) {
+                    // Group orders by user
+                    const userCounts = {};
+                    item.orders.forEach(o => {
+                        userCounts[o.user] = (userCounts[o.user] || 0) + 1;
+                    });
+                    const namesBadges = Object.entries(userCounts).map(([user, count]) => {
+                        const isMe = user === userName ? ' me' : '';
+                        return `<span class="name-badge${isMe}">${user}${count > 1 ? ' ×' + count : ''}</span>`;
+                    }).join('');
+                    namesHtml = `<div class="cart-item-names">${namesBadges}</div>`;
+                }
+                
                 html += `
                     <div class="cart-item">
                         <div class="cart-item-info">
                             <div class="cart-item-name">${item.name}</div>
                             <div class="cart-item-price">${item.price} × ${item.qty}</div>
+                            ${namesHtml}
                         </div>
                         <div class="cart-item-qty">
                             <button class="qty-btn" onclick="updateQty('${item.name}', -1)">−</button>
@@ -589,7 +952,14 @@
             const container = document.getElementById('menu-container');
             container.innerHTML = '';
 
+            let hasVisibleCategories = false;
+
             for (const [category, items] of Object.entries(data)) {
+                // Check if category is visible (default to true if not set)
+                const isVisible = cartData.visibleCategories[category] !== false;
+                if (!isVisible) continue;
+
+                hasVisibleCategories = true;
                 const categoryDiv = document.createElement('div');
                 categoryDiv.className = 'category';
 
@@ -627,10 +997,30 @@
                 categoryDiv.appendChild(grid);
                 container.appendChild(categoryDiv);
             }
+
+            if (!hasVisibleCategories) {
+                container.innerHTML = '<div class="loading">No menu items available at the moment.</div>';
+            }
         }
 
         // Initialize on page load
         document.addEventListener('DOMContentLoaded', async () => {
+            // Setup name input listener
+            const nameInput = document.getElementById('name-input');
+            nameInput.addEventListener('input', updateSaveButton);
+            nameInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter' && nameInput.value.trim()) {
+                    saveName();
+                }
+            });
+            
+            // Check if user has a name saved
+            if (!userName) {
+                showNameModal();
+            } else {
+                updateUserGreeting();
+            }
+            
             renderMenu(menuData);
             await loadCart();
         });
