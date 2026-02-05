@@ -1,68 +1,68 @@
 {
   "Desi Swad Chai Varieties": [
-    { "name": "Ginger Tea", "price": "Regular 17 | Large 26" },
-    { "name": "Filter Coffee", "price": "Regular 19 | Large 26" },
-    { "name": "Hot Badam Milk", "price": "Regular 24 | Large 30" },
-    { "name": "Horlicks / Bournvita", "price": "Regular 24 | Large 30" },
-    { "name": "Maalnad Kashaya", "price": "Regular 24 | Large 30" },
-    { "name": "Turmeric Milk", "price": "Regular 30 | Large 40" },
-    { "name": "Ginger Jaggery Tea", "price": "Regular 24 | Large 35" },
-    { "name": "Ginger Lemon Tea", "price": "Large 20" },
-    { "name": "Lemon Honey Tea", "price": "Large 24" }
+    { "name": "Ginger Tea", "price": "₹26" },
+    { "name": "Filter Coffee", "price": "₹26" },
+    { "name": "Hot Badam Milk", "price": "₹30" },
+    { "name": "Horlicks / Bournvita", "price": "₹30" },
+    { "name": "Maalnad Kashaya", "price": "₹30" },
+    { "name": "Turmeric Milk", "price": "₹40" },
+    { "name": "Ginger Jaggery Tea", "price": "₹35" },
+    { "name": "Ginger Lemon Tea", "price": "₹20" },
+    { "name": "Lemon Honey Tea", "price": "₹24" }
   ],
 
   "Green Tea Varieties": [
-    { "name": "Darjeeling Royal Green", "price": "Large 28" },
-    { "name": "Revital Green", "price": "Large 28" },
-    { "name": "Cinnamon Premium", "price": "Large 28" },
-    { "name": "Vanilla Refresh", "price": "Large 28" }
+    { "name": "Darjeeling Royal Green", "price": "₹28" },
+    { "name": "Revital Green", "price": "₹28" },
+    { "name": "Cinnamon Premium", "price": "₹28" },
+    { "name": "Vanilla Refresh", "price": "₹28" }
   ],
 
   "Black Tea Varieties": [
-    { "name": "Revital Black Tea", "price": "Large 28" },
-    { "name": "Basil Black Delight", "price": "Large 28" },
-    { "name": "Lemon Jeera Jaggery Tea", "price": "Large 28" },
-    { "name": "Rose Premium Tea", "price": "Large 28" },
-    { "name": "Black Tea with Vanilla", "price": "Large 28" }
+    { "name": "Revital Black Tea", "price": "₹28" },
+    { "name": "Basil Black Delight", "price": "₹28" },
+    { "name": "Lemon Jeera Jaggery Tea", "price": "₹28" },
+    { "name": "Rose Premium Tea", "price": "₹28" },
+    { "name": "Black Tea with Vanilla", "price": "₹28" }
   ],
 
   "Special Varieties (With Milk)": [
-    { "name": "Chai Elaichi Wali", "price": "Large 27" },
-    { "name": "Cinnamon Royal Tea", "price": "Large 27" },
-    { "name": "Irani Rose Premium Tea", "price": "Large 27" },
-    { "name": "Indian Tea with Vanilla", "price": "Large 27" }
+    { "name": "Chai Elaichi Wali", "price": "₹27" },
+    { "name": "Cinnamon Royal Tea", "price": "₹27" },
+    { "name": "Irani Rose Premium Tea", "price": "₹27" },
+    { "name": "Indian Tea with Vanilla", "price": "₹27" }
   ],
 
   "Pure Herb Tea Varieties": [
-    { "name": "Immune Tea", "price": "Large 28" },
-    { "name": "Refresh Tea", "price": "Large 28" },
-    { "name": "Cinnamon Tea with Honey", "price": "Large 28" },
-    { "name": "Real Mint with Honey", "price": "Large 28" }
+    { "name": "Immune Tea", "price": "₹28" },
+    { "name": "Refresh Tea", "price": "₹28" },
+    { "name": "Cinnamon Tea with Honey", "price": "₹28" },
+    { "name": "Real Mint with Honey", "price": "₹28" }
   ],
 
   "Cold Beverages": [
-    { "name": "Ice Tea", "price": "Large 38" },
-    { "name": "Cold Badam Milk", "price": "Large 44" },
-    { "name": "Cold Coffee", "price": "Large 60" },
-    { "name": "Jaggery Lassi", "price": "35" },
-    { "name": "Butter Milk", "price": "16" },
-    { "name": "Fresh Fruit Juices (Seasonal)", "price": "55" },
-    { "name": "Fresh Lime Water", "price": "16" },
-    { "name": "Fresh Lime with Soda", "price": "30" },
-    { "name": "Lemon Soda", "price": "30" },
-    { "name": "Sweet Lassi", "price": "35" },
-    { "name": "Strawberry Lassi", "price": "45" },
-    { "name": "Rose Lassi", "price": "45" },
-    { "name": "Mango Lassi (Seasonal)", "price": "45" },
-    { "name": "Kokum Juice", "price": "45" }
+    { "name": "Ice Tea", "price": "₹38" },
+    { "name": "Cold Badam Milk", "price": "₹44" },
+    { "name": "Cold Coffee", "price": "₹60" },
+    { "name": "Jaggery Lassi", "price": "₹35" },
+    { "name": "Butter Milk", "price": "₹16" },
+    { "name": "Fresh Fruit Juices (Seasonal)", "price": "₹55" },
+    { "name": "Fresh Lime Water", "price": "₹16" },
+    { "name": "Fresh Lime with Soda", "price": "₹30" },
+    { "name": "Lemon Soda", "price": "₹30" },
+    { "name": "Sweet Lassi", "price": "₹35" },
+    { "name": "Strawberry Lassi", "price": "₹45" },
+    { "name": "Rose Lassi", "price": "₹45" },
+    { "name": "Mango Lassi (Seasonal)", "price": "₹45" },
+    { "name": "Kokum Juice", "price": "₹45" }
   ],
 
   "Bakery Products": [
-    { "name": "Veg Puff", "price": "30" },
-    { "name": "Samosa", "price": "30" },
-    { "name": "Sugar / Choco Doughnut", "price": "30" },
-    { "name": "Veg Burger", "price": "58" },
-    { "name": "Honey Cake", "price": "32" },
-    { "name": "Banana Cake", "price": "52" }
+    { "name": "Veg Puff", "price": "₹30" },
+    { "name": "Samosa", "price": "₹30" },
+    { "name": "Sugar / Choco Doughnut", "price": "₹30" },
+    { "name": "Veg Burger", "price": "₹58" },
+    { "name": "Honey Cake", "price": "₹32" },
+    { "name": "Banana Cake", "price": "₹52" }
   ]
 }
