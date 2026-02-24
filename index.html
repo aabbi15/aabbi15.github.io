@@ -417,6 +417,70 @@
             color: #e74c3c;
         }
 
+        /* Cart Sections */
+        .cart-section {
+            margin-bottom: 15px;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .cart-section-header {
+            background: #f8f9fa;
+            padding: 10px 12px;
+            font-weight: 600;
+            color: #333;
+            border-bottom: 1px solid #eee;
+            font-size: 0.95rem;
+        }
+
+        #your-orders-section .cart-section-header {
+            background: #fdeaea;
+            color: #e74c3c;
+        }
+
+        #others-orders-section .cart-section-header {
+            background: #e8f4fd;
+            color: #2980b9;
+        }
+
+        .cart-section .cart-items {
+            padding: 5px 10px;
+            margin-bottom: 0;
+        }
+
+        .cart-subtotal {
+            padding: 10px 12px;
+            background: #f8f9fa;
+            border-top: 1px solid #eee;
+            font-weight: 600;
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+        }
+
+        #your-subtotal {
+            background: #fef5f5;
+            color: #c0392b;
+        }
+
+        #others-subtotal {
+            background: #f0f8ff;
+            color: #2471a3;
+        }
+
+        .cart-item-readonly {
+            opacity: 0.85;
+        }
+
+        .cart-item-readonly .cart-item-qty {
+            background: #f5f5f5;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-weight: 600;
+            color: #666;
+        }
+
         @media (max-width: 600px) {
             body {
                 padding: 10px;
@@ -443,7 +507,7 @@
             }
 
             .item-box {
-                padding: 12px;
+                padding: 7px;
                 aspect-ratio: auto;
                 min-height: 130px;
             }
@@ -565,7 +629,7 @@
 
             .item-box {
                 min-height: 120px;
-                padding: 10px;
+                padding: 5px;
             }
 
             .item-name {
@@ -603,11 +667,31 @@
             <button class="change-name" onclick="showNameModal()">Change</button>
         </div>
         <button class="refresh-btn" onclick="loadCart()">🔄 Refresh Cart</button>
-        <div class="cart-items" id="cart-items">
-            <div class="cart-empty">Cart is empty</div>
+        
+        <!-- Your Orders Section -->
+        <div class="cart-section" id="your-orders-section" style="display: none;">
+            <div class="cart-section-header">📝 Your Orders</div>
+            <div class="cart-items" id="your-cart-items"></div>
+            <div class="cart-subtotal" id="your-subtotal">
+                <span>Your Total:</span>
+                <span id="your-total-amount">₹0.00</span>
+            </div>
         </div>
+        
+        <!-- Others' Orders Section -->
+        <div class="cart-section" id="others-orders-section" style="display: none;">
+            <div class="cart-section-header">👥 Others' Orders</div>
+            <div class="cart-items" id="others-cart-items"></div>
+            <div class="cart-subtotal" id="others-subtotal">
+                <span>Others' Total:</span>
+                <span id="others-total-amount">₹0.00</span>
+            </div>
+        </div>
+        
+        <div class="cart-empty" id="cart-empty">Cart is empty</div>
+        
         <div class="cart-total" id="cart-total" style="display: none;">
-            <span>Total:</span>
+            <span>Grand Total:</span>
             <span id="total-amount">₹0.00</span>
         </div>
     </div>
@@ -625,13 +709,24 @@
     <!-- Status Message -->
     <div class="status" id="status"></div>
 
+    <!-- Supabase JS Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
     <script>
-        // JSONBin Configuration
-        const JSONBIN = {
-            BIN_ID: "69812b8c43b1c97be9609e38",
-            API_KEY: "$2a$10$XJ2usP1uw7US0SQPJKu2letKjyaWYMoyekK3UafabXGt3/1ZwjbB6", // Replace with your API key
-            BASE_URL: "https://api.jsonbin.io/v3/b"
-        };
+        // Supabase Configuration
+        const SUPABASE_URL = 'https://qlkasdsfrbvxpvgiiojs.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFsa2FzZHNmcmJ2eHB2Z2lpb2pzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzEzMzMyMTIsImV4cCI6MjA4NjkwOTIxMn0.IaHN6F8xBo5G5FvOmRuUzn5sbKtev8qHVlZUxWRYN-0';
+        
+        // Initialize Supabase client (will be set after checking library is loaded)
+        let supabaseClient = null;
+        
+        function initSupabase() {
+            if (window.supabase && window.supabase.createClient) {
+                supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+                return true;
+            }
+            return false;
+        }
 
         // Menu Data
         const menuData = {
@@ -687,14 +782,14 @@
                 { "name": "Mango Lassi (Seasonal)", "price": "₹45" },
                 { "name": "Kokum Juice", "price": "₹45" }
             ],
-            "Bakery Products": [
-                { "name": "Veg Puff", "price": "₹30" },
-                { "name": "Samosa", "price": "₹30" },
-                { "name": "Sugar / Choco Doughnut", "price": "₹30" },
-                { "name": "Veg Burger", "price": "₹58" },
-                { "name": "Honey Cake", "price": "₹32" },
-                { "name": "Banana Cake", "price": "₹52" }
-            ]
+            // "Bakery Products": [
+            //     { "name": "Veg Puff", "price": "₹30" },
+            //     { "name": "Samosa", "price": "₹30" },
+            //     { "name": "Sugar / Choco Doughnut", "price": "₹30" },
+            //     { "name": "Veg Burger", "price": "₹58" },
+            //     { "name": "Honey Cake", "price": "₹32" },
+            //     { "name": "Banana Cake", "price": "₹52" }
+            // ]
         };
 
         // Current cart state
@@ -772,163 +867,266 @@
             return '₹' + num.toFixed(2);
         }
 
-        // Load cart from JSONBin
+        // Load cart from Supabase
         async function loadCart() {
+            if (!supabaseClient) {
+                console.error('Supabase not initialized');
+                return;
+            }
+            
             try {
-                const response = await fetch(`${JSONBIN.BASE_URL}/${JSONBIN.BIN_ID}/latest`, {
-                    headers: {
-                        'X-Master-Key': JSONBIN.API_KEY
+                // Load orders from current_order table
+                const { data: orders, error: ordersError } = await supabaseClient
+                    .from('current_order')
+                    .select('*')
+                    .order('created_at', { ascending: true });
+                
+                if (ordersError) throw ordersError;
+                
+                // Load visible categories from app_settings
+                const { data: settings } = await supabaseClient
+                    .from('app_settings')
+                    .select('visible_categories')
+                    .eq('id', 1)
+                    .single();
+                
+                cartData.visibleCategories = settings?.visible_categories || {};
+                
+                // Group orders by food_name to build cart items
+                const itemsMap = {};
+                (orders || []).forEach(order => {
+                    if (!itemsMap[order.food_name]) {
+                        // Find price from menuData
+                        let price = '₹0';
+                        for (const category of Object.values(menuData)) {
+                            const menuItem = category.find(item => item.name === order.food_name);
+                            if (menuItem) {
+                                price = menuItem.price;
+                                break;
+                            }
+                        }
+                        itemsMap[order.food_name] = {
+                            name: order.food_name,
+                            price: price,
+                            qty: 0,
+                            orders: []
+                        };
                     }
+                    itemsMap[order.food_name].qty += order.quantity;
+                    itemsMap[order.food_name].orders.push({
+                        id: order.id,
+                        user: order.username,
+                        qty: order.quantity,
+                        time: new Date(order.created_at).getTime()
+                    });
                 });
                 
-                if (response.ok) {
-                    const data = await response.json();
-                    cartData = data.record || { items: [], lastUpdated: Date.now(), visibleCategories: {} };
-                    if (!cartData.items) cartData.items = [];
-                    if (!cartData.visibleCategories) cartData.visibleCategories = {};
-                    renderCart();
-                    renderMenu(menuData); // Re-render menu with visibility settings
-                    showStatus('Cart loaded!');
-                }
+                cartData.items = Object.values(itemsMap);
+                cartData.lastUpdated = Date.now();
+                
+                renderCart();
+                renderMenu(menuData);
+                showStatus('Cart loaded!');
             } catch (error) {
                 console.error('Error loading cart:', error);
                 showStatus('Error loading cart');
             }
         }
 
-        // Save cart to JSONBin
-        async function saveCart() {
-            try {
-                cartData.lastUpdated = Date.now();
-                const response = await fetch(`${JSONBIN.BASE_URL}/${JSONBIN.BIN_ID}`, {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-Master-Key': JSONBIN.API_KEY
-                    },
-                    body: JSON.stringify(cartData)
-                });
-                
-                if (response.ok) {
-                    showStatus('Cart updated!');
-                }
-            } catch (error) {
-                console.error('Error saving cart:', error);
-                showStatus('Error saving cart');
-            }
-        }
-
         // Add item to cart
         async function addToCart(itemName, price) {
             if (!checkUserName()) return;
-            
-            const existingItem = cartData.items.find(item => item.name === itemName);
-            
-            if (existingItem) {
-                existingItem.qty += 1;
-                // Add user to the orders list
-                if (!existingItem.orders) existingItem.orders = [];
-                existingItem.orders.push({ user: userName, qty: 1, time: Date.now() });
-            } else {
-                cartData.items.push({ 
-                    name: itemName, 
-                    price, 
-                    qty: 1,
-                    orders: [{ user: userName, qty: 1, time: Date.now() }]
-                });
+            if (!supabaseClient) {
+                showStatus('Database not connected');
+                return;
             }
             
-            renderCart();
-            await saveCart();
-            showStatus(`${itemName} added!`);
+            try {
+                // Insert new order row
+                const { error } = await supabaseClient
+                    .from('current_order')
+                    .insert({
+                        username: userName,
+                        food_name: itemName,
+                        quantity: 1
+                    });
+                
+                if (error) throw error;
+                
+                await loadCart();
+                showStatus(`${itemName} added!`);
+            } catch (error) {
+                console.error('Error adding to cart:', error);
+                showStatus('Error adding item');
+            }
         }
 
         // Update item quantity
         async function updateQty(itemName, delta) {
             if (!checkUserName()) return;
+            if (!supabaseClient) {
+                showStatus('Database not connected');
+                return;
+            }
             
             const item = cartData.items.find(i => i.name === itemName);
-            if (item) {
-                item.qty += delta;
-                
-                // Track who made the change
-                if (!item.orders) item.orders = [];
+            if (!item) return;
+            
+            try {
                 if (delta > 0) {
-                    item.orders.push({ user: userName, qty: 1, time: Date.now() });
+                    // Add a new order row for current user
+                    const { error } = await supabaseClient
+                        .from('current_order')
+                        .insert({
+                            username: userName,
+                            food_name: itemName,
+                            quantity: 1
+                        });
+                    if (error) throw error;
                 } else {
-                    // Remove one order from this user if possible
-                    const userOrderIdx = item.orders.findIndex(o => o.user === userName);
-                    if (userOrderIdx !== -1) {
-                        item.orders.splice(userOrderIdx, 1);
-                    } else if (item.orders.length > 0) {
-                        item.orders.pop(); // Remove last order
+                    // Find and delete one of CURRENT USER's orders only
+                    const userOrder = item.orders.find(o => o.user === userName);
+                    
+                    if (userOrder && userOrder.id) {
+                        const { error } = await supabaseClient
+                            .from('current_order')
+                            .delete()
+                            .eq('id', userOrder.id);
+                        if (error) throw error;
+                    } else {
+                        showStatus('No items to remove');
+                        return;
                     }
                 }
                 
-                if (item.qty <= 0) {
-                    cartData.items = cartData.items.filter(i => i.name !== itemName);
-                }
-                renderCart();
-                await saveCart();
+                await loadCart();
+            } catch (error) {
+                console.error('Error updating quantity:', error);
+                showStatus('Error updating cart');
             }
         }
 
         // Render cart
         function renderCart() {
-            const cartItemsEl = document.getElementById('cart-items');
+            const yourCartItemsEl = document.getElementById('your-cart-items');
+            const othersCartItemsEl = document.getElementById('others-cart-items');
             const cartTotalEl = document.getElementById('cart-total');
             const totalAmountEl = document.getElementById('total-amount');
             const cartCountEl = document.getElementById('cart-count');
+            const yourOrdersSection = document.getElementById('your-orders-section');
+            const othersOrdersSection = document.getElementById('others-orders-section');
+            const cartEmptyEl = document.getElementById('cart-empty');
+            const yourTotalEl = document.getElementById('your-total-amount');
+            const othersTotalEl = document.getElementById('others-total-amount');
             
             const totalItems = cartData.items.reduce((sum, item) => sum + item.qty, 0);
             cartCountEl.textContent = totalItems;
             
             if (cartData.items.length === 0) {
-                cartItemsEl.innerHTML = '<div class="cart-empty">Cart is empty</div>';
+                yourOrdersSection.style.display = 'none';
+                othersOrdersSection.style.display = 'none';
+                cartEmptyEl.style.display = 'block';
                 cartTotalEl.style.display = 'none';
                 return;
             }
             
-            let html = '';
-            let total = 0;
+            cartEmptyEl.style.display = 'none';
+            
+            // Separate items into user's orders and others' orders
+            let yourHtml = '';
+            let othersHtml = '';
+            let yourTotal = 0;
+            let othersTotal = 0;
+            let grandTotal = 0;
             
             cartData.items.forEach(item => {
-                const itemTotal = parsePrice(item.price) * item.qty;
-                total += itemTotal;
+                const itemPrice = parsePrice(item.price);
                 
-                // Build names list
-                let namesHtml = '';
-                if (item.orders && item.orders.length > 0) {
-                    // Group orders by user
-                    const userCounts = {};
-                    item.orders.forEach(o => {
-                        userCounts[o.user] = (userCounts[o.user] || 0) + 1;
-                    });
-                    const namesBadges = Object.entries(userCounts).map(([user, count]) => {
-                        const isMe = user === userName ? ' me' : '';
-                        return `<span class="name-badge${isMe}">${user}${count > 1 ? ' ×' + count : ''}</span>`;
-                    }).join('');
-                    namesHtml = `<div class="cart-item-names">${namesBadges}</div>`;
+                // Count user's quantity for this item
+                let userQty = 0;
+                let othersQty = 0;
+                const userOrders = [];
+                const othersOrders = [];
+                
+                item.orders.forEach(order => {
+                    if (order.user === userName) {
+                        userQty += order.qty;
+                        userOrders.push(order);
+                    } else {
+                        othersQty += order.qty;
+                        othersOrders.push(order);
+                    }
+                });
+                
+                // Render user's items with controls
+                if (userQty > 0) {
+                    const userItemTotal = itemPrice * userQty;
+                    yourTotal += userItemTotal;
+                    
+                    yourHtml += `
+                        <div class="cart-item">
+                            <div class="cart-item-info">
+                                <div class="cart-item-name">${item.name}</div>
+                                <div class="cart-item-price">${item.price} × ${userQty} = ${formatPrice(userItemTotal)}</div>
+                            </div>
+                            <div class="cart-item-qty">
+                                <button class="qty-btn" onclick="updateQty('${item.name}', -1)">−</button>
+                                <span>${userQty}</span>
+                                <button class="qty-btn" onclick="updateQty('${item.name}', 1)">+</button>
+                            </div>
+                        </div>
+                    `;
                 }
                 
-                html += `
-                    <div class="cart-item">
-                        <div class="cart-item-info">
-                            <div class="cart-item-name">${item.name}</div>
-                            <div class="cart-item-price">${item.price} × ${item.qty}</div>
-                            ${namesHtml}
+                // Render others' items as read-only
+                if (othersQty > 0) {
+                    const othersItemTotal = itemPrice * othersQty;
+                    othersTotal += othersItemTotal;
+                    
+                    // Build names list for others
+                    const userCounts = {};
+                    othersOrders.forEach(o => {
+                        userCounts[o.user] = (userCounts[o.user] || 0) + o.qty;
+                    });
+                    const namesBadges = Object.entries(userCounts).map(([user, count]) => {
+                        return `<span class="name-badge">${user}${count > 1 ? ' ×' + count : ''}</span>`;
+                    }).join('');
+                    
+                    othersHtml += `
+                        <div class="cart-item cart-item-readonly">
+                            <div class="cart-item-info">
+                                <div class="cart-item-name">${item.name}</div>
+                                <div class="cart-item-price">${item.price} × ${othersQty} = ${formatPrice(othersItemTotal)}</div>
+                                <div class="cart-item-names">${namesBadges}</div>
+                            </div>
+                            <div class="cart-item-qty">${othersQty}</div>
                         </div>
-                        <div class="cart-item-qty">
-                            <button class="qty-btn" onclick="updateQty('${item.name}', -1)">−</button>
-                            <span>${item.qty}</span>
-                            <button class="qty-btn" onclick="updateQty('${item.name}', 1)">+</button>
-                        </div>
-                    </div>
-                `;
+                    `;
+                }
             });
             
-            cartItemsEl.innerHTML = html;
-            totalAmountEl.textContent = formatPrice(total);
+            grandTotal = yourTotal + othersTotal;
+            
+            // Update Your Orders section
+            if (yourHtml) {
+                yourCartItemsEl.innerHTML = yourHtml;
+                yourTotalEl.textContent = formatPrice(yourTotal);
+                yourOrdersSection.style.display = 'block';
+            } else {
+                yourOrdersSection.style.display = 'none';
+            }
+            
+            // Update Others' Orders section
+            if (othersHtml) {
+                othersCartItemsEl.innerHTML = othersHtml;
+                othersTotalEl.textContent = formatPrice(othersTotal);
+                othersOrdersSection.style.display = 'block';
+            } else {
+                othersOrdersSection.style.display = 'none';
+            }
+            
+            // Update grand total
+            totalAmountEl.textContent = formatPrice(grandTotal);
             cartTotalEl.style.display = 'flex';
         }
 
@@ -937,12 +1135,12 @@
             const container = document.getElementById('menu-container');
             container.innerHTML = '';
 
-            let hasVisibleCategories = false;
+            let hasVisibleCategories = true;
 
             for (const [category, items] of Object.entries(data)) {
                 // Check if category is visible (default to true if not set)
-                const isVisible = cartData.visibleCategories[category] !== false;
-                if (!isVisible) continue;
+                // const isVisible = cartData.visibleCategories[category] !== false;
+                // if (!isVisible) continue;
 
                 hasVisibleCategories = true;
                 const categoryDiv = document.createElement('div');
@@ -964,17 +1162,17 @@
                     name.className = 'item-name';
                     name.textContent = item.name;
 
-                    const price = document.createElement('div');
-                    price.className = 'item-price';
-                    price.textContent = item.price;
+                    // const price = document.createElement('div');
+                    // price.className = 'item-price';
+                    // price.textContent = item.price;
 
                     const addBtn = document.createElement('button');
                     addBtn.className = 'add-btn';
-                    addBtn.textContent = '+ Add';
+                    addBtn.textContent = 'Add +1';
                     addBtn.onclick = () => addToCart(item.name, item.price);
 
                     box.appendChild(name);
-                    box.appendChild(price);
+                    // box.appendChild(price);
                     box.appendChild(addBtn);
                     grid.appendChild(box);
                 });
@@ -990,6 +1188,9 @@
 
         // Initialize on page load
         document.addEventListener('DOMContentLoaded', async () => {
+            // Render menu immediately (don't block on Supabase)
+            renderMenu(menuData);
+            
             // Setup name input listener
             const nameInput = document.getElementById('name-input');
             nameInput.addEventListener('input', updateSaveButton);
@@ -1006,8 +1207,13 @@
                 updateUserGreeting();
             }
             
-            renderMenu(menuData);
-            await loadCart();
+            // Initialize Supabase and load cart
+            if (initSupabase()) {
+                await loadCart();
+            } else {
+                console.error('Supabase library not loaded');
+                showStatus('Error: Could not connect to database');
+            }
         });
     </script>
 </body>

@@ -207,6 +207,46 @@
             background: #c0392b;
         }
 
+        .qty-controls {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .qty-btn {
+            background: #3498db;
+            color: white;
+            border: none;
+            width: 32px;
+            height: 32px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .qty-btn:hover {
+            background: #2980b9;
+        }
+
+        .qty-btn.minus {
+            background: #e67e22;
+        }
+
+        .qty-btn.minus:hover {
+            background: #d35400;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
         /* Total Row */
         .total-row {
             background: #1a1a2e;
@@ -528,6 +568,15 @@
                 font-size: 0.9rem;
             }
 
+            .qty-controls {
+                justify-content: flex-end;
+            }
+
+            .qty-btn {
+                width: 40px;
+                height: 40px;
+            }
+
             .total-row td {
                 justify-content: center;
                 font-size: 1.1rem;
@@ -613,7 +662,16 @@
             <label for="auto-refresh">Auto-refresh every 5 seconds</label>
         </div>
 
-       
+        <!-- Category Management
+        <div class="categories-section">
+            <div class="section-header">
+                <h2 class="section-title">📋 Menu Categories</h2>
+                <button class="toggle-all-btn" onclick="toggleAllCategories()">Toggle All</button>
+            </div>
+            <div class="category-grid" id="category-grid">
+                <div class="loading">Loading categories...</div>
+            </div>
+        </div> -->
 
         <!-- Cart Table -->
         <div class="cart-section">
@@ -626,30 +684,84 @@
         <div class="last-updated" id="last-updated"></div>
     </div>
 
-     <!-- Category Management -->
-        <div class="categories-section">
-            <div class="section-header">
-                <h2 class="section-title">📋 Menu Categories</h2>
-                <button class="toggle-all-btn" onclick="toggleAllCategories()">Toggle All</button>
-            </div>
-            <div class="category-grid" id="category-grid">
-                <div class="loading">Loading categories...</div>
-            </div>
-        </div>
-
     <!-- Status Message -->
     <div class="status" id="status"></div>
 
+    <!-- Supabase JS Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
     <script>
-        // JSONBin Configuration
-        const JSONBIN = {
-            BIN_ID: "69812b8c43b1c97be9609e38",
-            API_KEY: "$2a$10$XJ2usP1uw7US0SQPJKu2letKjyaWYMoyekK3UafabXGt3/1ZwjbB6", // Replace with your API key
-            BASE_URL: "https://api.jsonbin.io/v3/b"
-        };
+        // Supabase Configuration
+        const SUPABASE_URL = 'https://qlkasdsfrbvxpvgiiojs.supabase.co';
+        const SUPABASE_ANON_KEY = 'sb_publishable_iIybMY4jVAVqe2dkGGWaRA_qrKXJd4k';
+        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         let cartData = { items: [], lastUpdated: null, visibleCategories: {} };
         let autoRefreshInterval = null;
+
+        // Menu data for prices
+        const menuData = {
+            "Desi Swad Chai Varieties": [
+                { "name": "Ginger Tea", "price": "₹26" },
+                { "name": "Filter Coffee", "price": "₹26" },
+                { "name": "Hot Badam Milk", "price": "₹30" },
+                { "name": "Horlicks / Bournvita", "price": "₹30" },
+                { "name": "Maalnad Kashaya", "price": "₹30" },
+                { "name": "Turmeric Milk", "price": "₹40" },
+                { "name": "Ginger Jaggery Tea", "price": "₹35" },
+                { "name": "Ginger Lemon Tea", "price": "₹20" },
+                { "name": "Lemon Honey Tea", "price": "₹24" }
+            ],
+            "Green Tea Varieties": [
+                { "name": "Darjeeling Royal Green", "price": "₹28" },
+                { "name": "Revital Green", "price": "₹28" },
+                { "name": "Cinnamon Premium", "price": "₹28" },
+                { "name": "Vanilla Refresh", "price": "₹28" }
+            ],
+            "Black Tea Varieties": [
+                { "name": "Revital Black Tea", "price": "₹28" },
+                { "name": "Basil Black Delight", "price": "₹28" },
+                { "name": "Lemon Jeera Jaggery Tea", "price": "₹28" },
+                { "name": "Rose Premium Tea", "price": "₹28" },
+                { "name": "Black Tea with Vanilla", "price": "₹28" }
+            ],
+            "Special Varieties (With Milk)": [
+                { "name": "Chai Elaichi Wali", "price": "₹27" },
+                { "name": "Cinnamon Royal Tea", "price": "₹27" },
+                { "name": "Irani Rose Premium Tea", "price": "₹27" },
+                { "name": "Indian Tea with Vanilla", "price": "₹27" }
+            ],
+            "Pure Herb Tea Varieties": [
+                { "name": "Immune Tea", "price": "₹28" },
+                { "name": "Refresh Tea", "price": "₹28" },
+                { "name": "Cinnamon Tea with Honey", "price": "₹28" },
+                { "name": "Real Mint with Honey", "price": "₹28" }
+            ],
+            "Cold Beverages": [
+                { "name": "Ice Tea", "price": "₹38" },
+                { "name": "Cold Badam Milk", "price": "₹44" },
+                { "name": "Cold Coffee", "price": "₹60" },
+                { "name": "Jaggery Lassi", "price": "₹35" },
+                { "name": "Butter Milk", "price": "₹16" },
+                { "name": "Fresh Fruit Juices (Seasonal)", "price": "₹55" },
+                { "name": "Fresh Lime Water", "price": "₹16" },
+                { "name": "Fresh Lime with Soda", "price": "₹30" },
+                { "name": "Lemon Soda", "price": "₹30" },
+                { "name": "Sweet Lassi", "price": "₹35" },
+                { "name": "Strawberry Lassi", "price": "₹45" },
+                { "name": "Rose Lassi", "price": "₹45" },
+                { "name": "Mango Lassi (Seasonal)", "price": "₹45" },
+                { "name": "Kokum Juice", "price": "₹45" }
+            ]
+            // "Bakery Products": [
+            //     { "name": "Veg Puff", "price": "₹30" },
+            //     { "name": "Samosa", "price": "₹30" },
+            //     { "name": "Sugar / Choco Doughnut", "price": "₹30" },
+            //     { "name": "Veg Burger", "price": "₹58" },
+            //     { "name": "Honey Cake", "price": "₹32" },
+            //     { "name": "Banana Cake", "price": "₹52" }
+            // ]
+        };
 
         // All menu categories
         const allCategories = [
@@ -680,78 +792,176 @@
             return '₹' + num.toFixed(2);
         }
 
-        // Load cart from JSONBin
+        // Load cart from Supabase
         async function loadCart() {
             try {
-                const response = await fetch(`${JSONBIN.BASE_URL}/${JSONBIN.BIN_ID}/latest`, {
-                    headers: {
-                        'X-Master-Key': JSONBIN.API_KEY
+                // Load orders from current_order table
+                const { data: orders, error: ordersError } = await supabaseClient
+                    .from('current_order')
+                    .select('*')
+                    .order('created_at', { ascending: true });
+                
+                if (ordersError) throw ordersError;
+                
+                // Load visible categories from app_settings
+                const { data: settings } = await supabaseClient
+                    .from('app_settings')
+                    .select('visible_categories, updated_at')
+                    .eq('id', 1)
+                    .single();
+                
+                cartData.visibleCategories = settings?.visible_categories || {};
+                
+                // Initialize all categories as visible if not set
+                allCategories.forEach(cat => {
+                    if (cartData.visibleCategories[cat] === undefined) {
+                        cartData.visibleCategories[cat] = true;
                     }
                 });
                 
-                if (response.ok) {
-                    const data = await response.json();
-                    cartData = data.record || { items: [], lastUpdated: Date.now(), visibleCategories: {} };
-                    if (!cartData.items) cartData.items = [];
-                    if (!cartData.visibleCategories) cartData.visibleCategories = {};
-                    
-                    // Initialize all categories as visible if not set
-                    allCategories.forEach(cat => {
-                        if (cartData.visibleCategories[cat] === undefined) {
-                            cartData.visibleCategories[cat] = true;
+                // Group orders by food_name to build cart items
+                const itemsMap = {};
+                (orders || []).forEach(order => {
+                    if (!itemsMap[order.food_name]) {
+                        // Find price from menuData
+                        let price = '₹0';
+                        for (const category of Object.values(menuData)) {
+                            const menuItem = category.find(item => item.name === order.food_name);
+                            if (menuItem) {
+                                price = menuItem.price;
+                                break;
+                            }
                         }
+                        itemsMap[order.food_name] = {
+                            name: order.food_name,
+                            price: price,
+                            qty: 0,
+                            orders: []
+                        };
+                    }
+                    itemsMap[order.food_name].qty += order.quantity;
+                    itemsMap[order.food_name].orders.push({
+                        id: order.id,
+                        user: order.username,
+                        qty: order.quantity,
+                        time: new Date(order.created_at).getTime()
                     });
-                    
-                    renderCart();
-                    renderCategories();
-                    updateStats();
-                    updateLastUpdated();
-                }
+                });
+                
+                cartData.items = Object.values(itemsMap);
+                cartData.lastUpdated = settings?.updated_at ? new Date(settings.updated_at).getTime() : Date.now();
+                
+                renderCart();
+                // renderCategories();
+                updateStats();
+                updateLastUpdated();
             } catch (error) {
                 console.error('Error loading cart:', error);
                 showStatus('Error loading cart');
             }
         }
 
-        // Save cart to JSONBin
-        async function saveCart() {
+        // Save settings to Supabase (for category visibility)
+        async function saveSettings() {
             try {
-                cartData.lastUpdated = Date.now();
-                const response = await fetch(`${JSONBIN.BASE_URL}/${JSONBIN.BIN_ID}`, {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-Master-Key': JSONBIN.API_KEY
-                    },
-                    body: JSON.stringify(cartData)
-                });
+                const { error } = await supabaseClient
+                    .from('app_settings')
+                    .upsert({
+                        id: 1,
+                        visible_categories: cartData.visibleCategories,
+                        updated_at: new Date().toISOString()
+                    });
                 
-                if (response.ok) {
-                    showStatus('Cart updated!');
-                }
+                if (error) throw error;
+                showStatus('Settings updated!');
             } catch (error) {
-                console.error('Error saving cart:', error);
-                showStatus('Error saving cart');
+                console.error('Error saving settings:', error);
+                showStatus('Error saving settings');
+            }
+        }
+
+        // Increment item quantity (add one more order)
+        async function incrementItem(name) {
+            try {
+                // Find the item to get user info (use first user's name for admin additions)
+                const item = cartData.items.find(i => i.name === name);
+                const username = item?.orders?.[0]?.user || 'Admin';
+                
+                const { error } = await supabaseClient
+                    .from('current_order')
+                    .insert({
+                        username: username,
+                        food_name: name,
+                        quantity: 1
+                    });
+                
+                if (error) throw error;
+                await loadCart();
+                showStatus(`${name} +1`);
+            } catch (error) {
+                console.error('Error incrementing item:', error);
+                showStatus('Error updating quantity');
+            }
+        }
+
+        // Decrement item quantity (remove one order)
+        async function decrementItem(name) {
+            try {
+                const item = cartData.items.find(i => i.name === name);
+                if (!item || item.orders.length === 0) return;
+                
+                // Delete the most recent order for this item
+                const orderToDelete = item.orders[item.orders.length - 1];
+                
+                const { error } = await supabaseClient
+                    .from('current_order')
+                    .delete()
+                    .eq('id', orderToDelete.id);
+                
+                if (error) throw error;
+                await loadCart();
+                showStatus(`${name} -1`);
+            } catch (error) {
+                console.error('Error decrementing item:', error);
+                showStatus('Error updating quantity');
             }
         }
 
         // Remove item from cart
         async function removeItem(name) {
-            if (confirm(`Remove "${name}" from cart?`)) {
-                cartData.items = cartData.items.filter(item => item.name !== name);
-                renderCart();
-                updateStats();
-                await saveCart();
+            if (confirm(`Remove all "${name}" from cart?`)) {
+                try {
+                    const { error } = await supabaseClient
+                        .from('current_order')
+                        .delete()
+                        .eq('food_name', name);
+                    
+                    if (error) throw error;
+                    await loadCart();
+                    showStatus(`${name} removed!`);
+                } catch (error) {
+                    console.error('Error removing item:', error);
+                    showStatus('Error removing item');
+                }
             }
         }
 
         // Clear entire cart
         async function clearCart() {
             if (confirm('Are you sure you want to clear the entire cart?')) {
-                cartData.items = [];
-                renderCart();
-                updateStats();
-                await saveCart();
+                try {
+                    const { error } = await supabaseClient
+                        .from('current_order')
+                        .delete()
+                        .neq('id', 0); // Delete all rows
+                    
+                    if (error) throw error;
+                    await loadCart();
+                    showStatus('Cart cleared!');
+                } catch (error) {
+                    console.error('Error clearing cart:', error);
+                    showStatus('Error clearing cart');
+                }
             }
         }
 
@@ -818,11 +1028,17 @@
                     <tr>
                         <td class="item-name" data-label="Item">${item.name}</td>
                         <td class="item-price" data-label="Price">${item.price}</td>
-                        <td data-label="Qty"><span class="item-qty">${item.qty}</span></td>
+                        <td data-label="Qty">
+                            <div class="qty-controls">
+                                <button class="qty-btn minus" onclick="decrementItem('${item.name}')">−</button>
+                                <span class="item-qty">${item.qty}</span>
+                                <button class="qty-btn" onclick="incrementItem('${item.name}')">+</button>
+                            </div>
+                        </td>
                         <td class="orders-list" data-label="Ordered By">${ordersHtml}</td>
                         <td class="item-total" data-label="Total">${formatPrice(itemTotal)}</td>
                         <td data-label="">
-                            <button class="remove-btn" onclick="removeItem('${item.name}')">Remove</button>
+                            <button class="remove-btn" onclick="removeItem('${item.name}')">Remove All</button>
                         </td>
                     </tr>
                 `;
@@ -884,8 +1100,8 @@
         // Toggle single category visibility
         async function toggleCategory(category) {
             cartData.visibleCategories[category] = !cartData.visibleCategories[category];
-            renderCategories();
-            await saveCart();
+            // renderCategories();
+            await saveSettings();
             showStatus(`${category} ${cartData.visibleCategories[category] ? 'enabled' : 'disabled'}`);
         }
 
@@ -899,8 +1115,8 @@
                 cartData.visibleCategories[cat] = !shouldDisable;
             });
             
-            renderCategories();
-            await saveCart();
+            // renderCategories();
+            await saveSettings();
             showStatus(shouldDisable ? 'All categories disabled' : 'All categories enabled');
         }
 
