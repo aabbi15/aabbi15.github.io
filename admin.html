@@ -84,6 +84,20 @@
             background: #c0392b;
         }
 
+        .save-clear-btn {
+            background: #f39c12;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .save-clear-btn:hover {
+            background: #e67e22;
+        }
+
         /* Stats Cards */
         .stats {
             display: grid;
@@ -636,6 +650,7 @@
             <div class="header-actions">
                 <a href="index.html" class="back-link">← Back to Menu</a>
                 <button class="refresh-btn" onclick="loadCart()">🔄 Refresh</button>
+                <button class="save-clear-btn" id="save-clear-btn" onclick="saveAndClearCart()">💾 Save & Clear</button>
                 <button class="clear-btn" onclick="clearCart()">🗑️ Clear All</button>
             </div>
         </header>
@@ -790,6 +805,23 @@
         // Format number to price string
         function formatPrice(num) {
             return '₹' + num.toFixed(2);
+        }
+
+        function getUnitPrice(foodName) {
+            for (const categoryItems of Object.values(menuData)) {
+                const menuItem = categoryItems.find(item => item.name === foodName);
+                if (menuItem) {
+                    return parsePrice(menuItem.price);
+                }
+            }
+            return 0;
+        }
+
+        function setSaveClearLoading(isLoading) {
+            const button = document.getElementById('save-clear-btn');
+            if (!button) return;
+            button.disabled = isLoading;
+            button.textContent = isLoading ? '⏳ Saving...' : '💾 Save & Clear';
         }
 
         // Load cart from Supabase
@@ -962,6 +994,53 @@
                     console.error('Error clearing cart:', error);
                     showStatus('Error clearing cart');
                 }
+            }
+        }
+
+        // Save current cart into order_history and then clear archived rows
+        async function saveAndClearCart() {
+            if (!confirm('Save current cart to history and clear it?')) {
+                return;
+            }
+
+            setSaveClearLoading(true);
+
+            try {
+                const { data: currentOrders, error: fetchError } = await supabaseClient
+                    .from('current_order')
+                    .select('id, username, food_name, quantity');
+
+                if (fetchError) throw fetchError;
+
+                if (!currentOrders || currentOrders.length === 0) {
+                    showStatus('No orders to save');
+                    return;
+                }
+
+                const payload = currentOrders.map(order => ({
+                    id: order.id,
+                    username: order.username,
+                    food_name: order.food_name,
+                    quantity: order.quantity,
+                    unit_price: getUnitPrice(order.food_name)
+                }));
+
+                const { data: rpcData, error: rpcError } = await supabaseClient
+                    .rpc('save_and_clear_orders', { p_orders: payload });
+
+                if (rpcError) throw rpcError;
+
+                const result = Array.isArray(rpcData) ? rpcData[0] : rpcData;
+                const archivedCount = result?.archived_count ?? payload.length;
+                const batchId = result?.order_batch_id || 'unknown';
+
+                await loadCart();
+                showStatus(`Saved ${archivedCount} rows (Batch ${String(batchId).slice(0, 8)}...)`);
+            } catch (error) {
+                console.error('Error saving and clearing cart:', error);
+                showStatus('Error in Save & Clear');
+            } finally {
+                setSaveClearLoading(false);
             }
         }
 
