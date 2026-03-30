@@ -620,6 +620,76 @@
             }
         }
 
+        /* Search Bar */
+        .search-container {
+            max-width: 500px;
+            margin: 0 auto 25px auto;
+            position: relative;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 12px 40px 12px 15px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.2s;
+            background: white;
+        }
+
+        .search-input:focus {
+            border-color: #3498db;
+        }
+
+        .search-clear {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            cursor: pointer;
+            color: #999;
+            display: none;
+        }
+
+        .search-clear:hover {
+            color: #333;
+        }
+
+        .search-info {
+            text-align: center;
+            color: #999;
+            font-size: 0.85rem;
+            margin-top: 8px;
+        }
+
+        .search-info .fuzzy-tag {
+            background: #fff3cd;
+            color: #856404;
+            padding: 1px 6px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            margin-left: 4px;
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 40px 20px;
+            color: #999;
+        }
+
+        .no-results h3 {
+            margin-bottom: 8px;
+            color: #666;
+        }
+
+        .item-box.search-highlight {
+            border: 2px solid #f39c12;
+        }
+
         /* Extra small devices */
         @media (max-width: 360px) {
             .items-grid {
@@ -647,6 +717,11 @@
     <a href="admin.html" class="admin-link">🔐 Admin</a>
     
     <h1>🍽️ Menu</h1>
+    <div class="search-container">
+        <input type="text" class="search-input" id="search-input" placeholder="Search menu items..." autocomplete="off">
+        <button class="search-clear" id="search-clear" onclick="clearSearch()">✕</button>
+        <div class="search-info" id="search-info"></div>
+    </div>
     <div id="menu-container">
         <div class="loading">Loading menu...</div>
     </div>
@@ -767,7 +842,6 @@
                 { "name": "Real Mint with Honey", "price": "₹28" }
             ],
             "Cold Beverages": [
-                { "name": "Ice Tea", "price": "₹38" },
                 { "name": "Cold Badam Milk", "price": "₹44" },
                 { "name": "Cold Coffee", "price": "₹60" },
                 { "name": "Jaggery Lassi", "price": "₹35" },
@@ -795,6 +869,166 @@
         // Current cart state
         let cartData = { items: [], lastUpdated: Date.now(), visibleCategories: {} };
         let userName = sessionStorage.getItem('userName') || '';
+        let currentSearchQuery = '';
+
+        // --- Fuzzy Search ---
+
+        // Levenshtein distance between two strings
+        function levenshtein(a, b) {
+            const m = a.length;
+            const n = b.length;
+            const dp = [];
+            for (let i = 0; i <= m; i++) {
+                dp[i] = [i];
+            }
+            for (let j = 0; j <= n; j++) {
+                dp[0][j] = j;
+            }
+            for (let i = 1; i <= m; i++) {
+                for (let j = 1; j <= n; j++) {
+                    if (a[i - 1] === b[j - 1]) {
+                        dp[i][j] = dp[i - 1][j - 1];
+                    } else {
+                        dp[i][j] = 1 + Math.min(dp[i - 1][j], dp[i][j - 1], dp[i - 1][j - 1]);
+                    }
+                }
+            }
+            return dp[m][n];
+        }
+
+        // Check if any word in the item is close to any search word
+        function fuzzyWordMatch(itemName, query) {
+            const itemWords = itemName.toLowerCase().split(/\s+/);
+            const queryWords = query.toLowerCase().split(/\s+/);
+            let totalScore = 0;
+            let matchedWords = 0;
+
+            for (let qi = 0; qi < queryWords.length; qi++) {
+                const qw = queryWords[qi];
+                if (qw.length === 0) continue;
+                let bestDist = Infinity;
+                for (let ii = 0; ii < itemWords.length; ii++) {
+                    const iw = itemWords[ii];
+                    // Substring match on the word
+                    if (iw.includes(qw)) {
+                        bestDist = 0;
+                        break;
+                    }
+                    // Also check if query word is close to start of item word
+                    const sub = iw.substring(0, qw.length);
+                    const dist = levenshtein(qw, sub);
+                    if (dist < bestDist) bestDist = dist;
+                    // Full word distance
+                    const fullDist = levenshtein(qw, iw);
+                    if (fullDist < bestDist) bestDist = fullDist;
+                }
+                // Allow more tolerance for longer words
+                const threshold = qw.length <= 3 ? 1 : Math.floor(qw.length / 3);
+                if (bestDist <= threshold) {
+                    matchedWords++;
+                    totalScore += bestDist;
+                }
+            }
+
+            const totalQueryWords = queryWords.filter(w => w.length > 0).length;
+            if (totalQueryWords === 0) return null;
+
+            // All query words must match
+            if (matchedWords < totalQueryWords) return null;
+
+            return { score: totalScore, isFuzzy: totalScore > 0 };
+        }
+
+        // Search menu items, returns filtered menuData structure + metadata
+        function searchMenu(query) {
+            query = query.trim();
+            if (!query) return { data: menuData, resultCount: -1 };
+
+            const results = {};
+            let resultCount = 0;
+            const queryLower = query.toLowerCase();
+
+            for (const [category, items] of Object.entries(menuData)) {
+                const matchedItems = [];
+                for (let i = 0; i < items.length; i++) {
+                    const item = items[i];
+                    const nameLower = item.name.toLowerCase();
+
+                    // Direct substring match (highest priority)
+                    if (nameLower.includes(queryLower)) {
+                        matchedItems.push({ ...item, _score: 0, _fuzzy: false });
+                        continue;
+                    }
+
+                    // Fuzzy word-level match
+                    const match = fuzzyWordMatch(item.name, query);
+                    if (match) {
+                        matchedItems.push({ ...item, _score: match.score, _fuzzy: match.isFuzzy });
+                    }
+                }
+
+                // Sort by score (exact matches first)
+                matchedItems.sort((a, b) => a._score - b._score);
+
+                if (matchedItems.length > 0) {
+                    results[category] = matchedItems;
+                    resultCount += matchedItems.length;
+                }
+            }
+
+            return { data: results, resultCount };
+        }
+
+        function clearSearch() {
+            const input = document.getElementById('search-input');
+            input.value = '';
+            currentSearchQuery = '';
+            document.getElementById('search-clear').style.display = 'none';
+            document.getElementById('search-info').textContent = '';
+            renderMenu(menuData);
+        }
+
+        function handleSearch() {
+            const query = document.getElementById('search-input').value;
+            const clearBtn = document.getElementById('search-clear');
+            const infoEl = document.getElementById('search-info');
+            currentSearchQuery = query.trim();
+
+            clearBtn.style.display = query ? 'block' : 'none';
+
+            const { data, resultCount } = searchMenu(query);
+
+            if (resultCount === -1) {
+                // No query, show full menu
+                infoEl.textContent = '';
+                renderMenu(menuData);
+                return;
+            }
+
+            if (resultCount === 0) {
+                infoEl.textContent = '';
+                const container = document.getElementById('menu-container');
+                container.innerHTML = '<div class="no-results"><h3>No items found</h3><p>Try a different search term</p></div>';
+                return;
+            }
+
+            // Check if any results are fuzzy
+            let hasFuzzy = false;
+            for (const items of Object.values(data)) {
+                for (let i = 0; i < items.length; i++) {
+                    if (items[i]._fuzzy) { hasFuzzy = true; break; }
+                }
+                if (hasFuzzy) break;
+            }
+
+            let info = resultCount + ' item' + (resultCount !== 1 ? 's' : '') + ' found';
+            if (hasFuzzy) {
+                info += ' <span class="fuzzy-tag">~approx</span>';
+            }
+            infoEl.innerHTML = info;
+
+            renderMenu(data);
+        }
 
         // Name modal functions
         function showNameModal() {
@@ -925,7 +1159,12 @@
                 cartData.lastUpdated = Date.now();
                 
                 renderCart();
-                renderMenu(menuData);
+                // Re-render with active search filter if any
+                if (currentSearchQuery) {
+                    handleSearch();
+                } else {
+                    renderMenu(menuData);
+                }
                 showStatus('Cart loaded!');
             } catch (error) {
                 console.error('Error loading cart:', error);
@@ -1156,7 +1395,7 @@
 
                 items.forEach(item => {
                     const box = document.createElement('div');
-                    box.className = 'item-box';
+                    box.className = 'item-box' + (item._fuzzy ? ' search-highlight' : '');
 
                     const name = document.createElement('div');
                     name.className = 'item-name';
@@ -1190,7 +1429,12 @@
         document.addEventListener('DOMContentLoaded', async () => {
             // Render menu immediately (don't block on Supabase)
             renderMenu(menuData);
+
             
+            // Setup search input listener
+            const searchInput = document.getElementById('search-input');
+            searchInput.addEventListener('input', handleSearch);
+
             // Setup name input listener
             const nameInput = document.getElementById('name-input');
             nameInput.addEventListener('input', updateSaveButton);

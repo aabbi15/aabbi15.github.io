@@ -41,7 +41,6 @@
   ],
 
   "Cold Beverages": [
-    { "name": "Ice Tea", "price": "₹38" },
     { "name": "Cold Badam Milk", "price": "₹44" },
     { "name": "Cold Coffee", "price": "₹60" },
     { "name": "Jaggery Lassi", "price": "₹35" },

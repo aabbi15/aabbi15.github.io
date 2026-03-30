@@ -64,3 +64,41 @@ GRANT SELECT, INSERT, UPDATE, DELETE ON public.current_order TO anon;
 GRANT SELECT, INSERT, UPDATE, DELETE ON public.current_order TO authenticated;
 GRANT SELECT, INSERT, UPDATE ON public.app_settings TO anon;
 GRANT SELECT, INSERT, UPDATE ON public.app_settings TO authenticated;
+
+-- Required for gen_random_uuid() used in transactional archive function
+CREATE EXTENSION IF NOT EXISTS pgcrypto;
+
+-- Transactional function: archive current orders into order_history and clear only archived rows
+-- Expects JSON array items with keys: id, username, food_name, quantity, unit_price
+CREATE OR REPLACE FUNCTION public.save_and_clear_orders(p_orders JSONB)
+RETURNS TABLE(order_batch_id UUID, archived_count INTEGER)
+LANGUAGE plpgsql
+SECURITY DEFINER
+AS $$
+DECLARE
+    v_batch_id UUID := gen_random_uuid();
+BEGIN
+    IF p_orders IS NULL OR jsonb_array_length(p_orders) = 0 THEN
+        RETURN QUERY SELECT NULL::UUID, 0;
+        RETURN;
+    END IF;
+
+    INSERT INTO public.order_history (order_batch_id, username, food_name, quantity, unit_price)
+    SELECT
+        v_batch_id,
+        item->>'username',
+        item->>'food_name',
+        (item->>'quantity')::BIGINT,
+        COALESCE((item->>'unit_price')::NUMERIC(10,2), 0.00)
+    FROM jsonb_array_elements(p_orders) AS item;
+
+    DELETE FROM public.current_order c
+    USING jsonb_array_elements(p_orders) AS item
+    WHERE c.id = (item->>'id')::BIGINT;
+
+    RETURN QUERY SELECT v_batch_id, jsonb_array_length(p_orders);
+END;
+$$;
+
+GRANT EXECUTE ON FUNCTION public.save_and_clear_orders(JSONB) TO anon;
+GRANT EXECUTE ON FUNCTION public.save_and_clear_orders(JSONB) TO authenticated;
