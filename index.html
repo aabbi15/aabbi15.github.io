@@ -417,6 +417,70 @@
             color: #e74c3c;
         }
 
+        /* Cart Sections */
+        .cart-section {
+            margin-bottom: 15px;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .cart-section-header {
+            background: #f8f9fa;
+            padding: 10px 12px;
+            font-weight: 600;
+            color: #333;
+            border-bottom: 1px solid #eee;
+            font-size: 0.95rem;
+        }
+
+        #your-orders-section .cart-section-header {
+            background: #fdeaea;
+            color: #e74c3c;
+        }
+
+        #others-orders-section .cart-section-header {
+            background: #e8f4fd;
+            color: #2980b9;
+        }
+
+        .cart-section .cart-items {
+            padding: 5px 10px;
+            margin-bottom: 0;
+        }
+
+        .cart-subtotal {
+            padding: 10px 12px;
+            background: #f8f9fa;
+            border-top: 1px solid #eee;
+            font-weight: 600;
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+        }
+
+        #your-subtotal {
+            background: #fef5f5;
+            color: #c0392b;
+        }
+
+        #others-subtotal {
+            background: #f0f8ff;
+            color: #2471a3;
+        }
+
+        .cart-item-readonly {
+            opacity: 0.85;
+        }
+
+        .cart-item-readonly .cart-item-qty {
+            background: #f5f5f5;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-weight: 600;
+            color: #666;
+        }
+
         @media (max-width: 600px) {
             body {
                 padding: 10px;
@@ -443,7 +507,7 @@
             }
 
             .item-box {
-                padding: 12px;
+                padding: 7px;
                 aspect-ratio: auto;
                 min-height: 130px;
             }
@@ -556,6 +620,76 @@
             }
         }
 
+        /* Search Bar */
+        .search-container {
+            max-width: 500px;
+            margin: 0 auto 25px auto;
+            position: relative;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 12px 40px 12px 15px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.2s;
+            background: white;
+        }
+
+        .search-input:focus {
+            border-color: #3498db;
+        }
+
+        .search-clear {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            cursor: pointer;
+            color: #999;
+            display: none;
+        }
+
+        .search-clear:hover {
+            color: #333;
+        }
+
+        .search-info {
+            text-align: center;
+            color: #999;
+            font-size: 0.85rem;
+            margin-top: 8px;
+        }
+
+        .search-info .fuzzy-tag {
+            background: #fff3cd;
+            color: #856404;
+            padding: 1px 6px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            margin-left: 4px;
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 40px 20px;
+            color: #999;
+        }
+
+        .no-results h3 {
+            margin-bottom: 8px;
+            color: #666;
+        }
+
+        .item-box.search-highlight {
+            border: 2px solid #f39c12;
+        }
+
         /* Extra small devices */
         @media (max-width: 360px) {
             .items-grid {
@@ -565,7 +699,7 @@
 
             .item-box {
                 min-height: 120px;
-                padding: 10px;
+                padding: 5px;
             }
 
             .item-name {
@@ -583,6 +717,11 @@
     <a href="admin.html" class="admin-link">🔐 Admin</a>
     
     <h1>🍽️ Menu</h1>
+    <div class="search-container">
+        <input type="text" class="search-input" id="search-input" placeholder="Search menu items..." autocomplete="off">
+        <button class="search-clear" id="search-clear" onclick="clearSearch()">✕</button>
+        <div class="search-info" id="search-info"></div>
+    </div>
     <div id="menu-container">
         <div class="loading">Loading menu...</div>
     </div>
@@ -603,11 +742,31 @@
             <button class="change-name" onclick="showNameModal()">Change</button>
         </div>
         <button class="refresh-btn" onclick="loadCart()">🔄 Refresh Cart</button>
-        <div class="cart-items" id="cart-items">
-            <div class="cart-empty">Cart is empty</div>
+        
+        <!-- Your Orders Section -->
+        <div class="cart-section" id="your-orders-section" style="display: none;">
+            <div class="cart-section-header">📝 Your Orders</div>
+            <div class="cart-items" id="your-cart-items"></div>
+            <div class="cart-subtotal" id="your-subtotal">
+                <span>Your Total:</span>
+                <span id="your-total-amount">₹0.00</span>
+            </div>
         </div>
+        
+        <!-- Others' Orders Section -->
+        <div class="cart-section" id="others-orders-section" style="display: none;">
+            <div class="cart-section-header">👥 Others' Orders</div>
+            <div class="cart-items" id="others-cart-items"></div>
+            <div class="cart-subtotal" id="others-subtotal">
+                <span>Others' Total:</span>
+                <span id="others-total-amount">₹0.00</span>
+            </div>
+        </div>
+        
+        <div class="cart-empty" id="cart-empty">Cart is empty</div>
+        
         <div class="cart-total" id="cart-total" style="display: none;">
-            <span>Total:</span>
+            <span>Grand Total:</span>
             <span id="total-amount">₹0.00</span>
         </div>
     </div>
@@ -625,96 +784,251 @@
     <!-- Status Message -->
     <div class="status" id="status"></div>
 
+    <!-- Supabase JS Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
     <script>
-        // JSONBin Configuration
-        const JSONBIN = {
-            BIN_ID: "69812b8c43b1c97be9609e38",
-            API_KEY: "$2a$10$XJ2usP1uw7US0SQPJKu2letKjyaWYMoyekK3UafabXGt3/1ZwjbB6", // Replace with your API key
-            BASE_URL: "https://api.jsonbin.io/v3/b"
-        };
+        // Supabase Configuration
+        const SUPABASE_URL = 'https://qlkasdsfrbvxpvgiiojs.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFsa2FzZHNmcmJ2eHB2Z2lpb2pzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzEzMzMyMTIsImV4cCI6MjA4NjkwOTIxMn0.IaHN6F8xBo5G5FvOmRuUzn5sbKtev8qHVlZUxWRYN-0';
+        
+        // Initialize Supabase client (will be set after checking library is loaded)
+        let supabaseClient = null;
+        
+        function initSupabase() {
+            if (window.supabase && window.supabase.createClient) {
+                supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+                return true;
+            }
+            return false;
+        }
 
         // Menu Data
         const menuData = {
-            "Sandwich": [
-                { "name": "Corn Sandwich", "price": "₹42.00" },
-                { "name": "Butter Bread Jam", "price": "₹30.00" },
-                { "name": "Corn Cheese Sandwich", "price": "₹53.00" },
-                { "name": "Tomato Cheese Sandwich", "price": "₹47.00" },
-                { "name": "Veg Cheese Sandwich", "price": "₹53.00" },
-                { "name": "Veg Sandwich", "price": "₹42.00" },
-                { "name": "Extra Cheese", "price": "₹11.00" }
+            "Desi Swad Chai Varieties": [
+                { "name": "Ginger Tea", "price": "₹26" },
+                { "name": "Filter Coffee", "price": "₹26" },
+                { "name": "Hot Badam Milk", "price": "₹30" },
+                { "name": "Horlicks / Bournvita", "price": "₹30" },
+                { "name": "Maalnad Kashaya", "price": "₹30" },
+                { "name": "Turmeric Milk", "price": "₹40" },
+                { "name": "Ginger Jaggery Tea", "price": "₹35" },
+                { "name": "Ginger Lemon Tea", "price": "₹20" },
+                { "name": "Lemon Honey Tea", "price": "₹24" }
             ],
-            "Bakery Items": [
-                { "name": "Veg Cutlet", "price": "₹24.00" },
-                { "name": "Pastry", "price": "₹61.00" },
-                { "name": "Brownie", "price": "₹71.00" }
+            "Green Tea Varieties": [
+                { "name": "Darjeeling Royal Green", "price": "₹28" },
+                { "name": "Revital Green", "price": "₹28" },
+                { "name": "Cinnamon Premium", "price": "₹28" },
+                { "name": "Vanilla Refresh", "price": "₹28" }
             ],
-            "Healthy Bites": [
-                { "name": "Juice ABC", "price": "₹59.00" },
-                { "name": "Butter Milk", "price": "₹16.00" },
-                { "name": "Fruit Bowl", "price": "₹51.00" },
-                { "name": "White Pumpkin Juice", "price": "₹35.00" }
+            "Black Tea Varieties": [
+                { "name": "Revital Black Tea", "price": "₹28" },
+                { "name": "Basil Black Delight", "price": "₹28" },
+                { "name": "Lemon Jeera Jaggery Tea", "price": "₹28" },
+                { "name": "Rose Premium Tea", "price": "₹28" },
+                { "name": "Black Tea with Vanilla", "price": "₹28" }
             ],
-            "Hot Beverages": [
-                { "name": "Badam Milk", "price": "₹18.00" },
-                { "name": "Bournvita", "price": "₹18.00" },
-                { "name": "Boost", "price": "₹18.00" },
-                { "name": "Horlicks", "price": "₹18.00" },
-                { "name": "Bullet Coffee", "price": "₹17.00" },
-                { "name": "Ooty Kashaya", "price": "₹18.00" },
-                { "name": "Tea With Honey", "price": "₹18.00" },
-                { "name": "Shunti Coffee", "price": "₹15.00" },
-                { "name": "Filter Coffee", "price": "₹15.00" },
-                { "name": "Lemon Tea", "price": "₹12.00" },
-                { "name": "Ginger Tea", "price": "₹13.00" },
-                { "name": "Green Tea", "price": "₹12.00" },
-                { "name": "Black Coffee", "price": "₹15.00" },
-                { "name": "Jaggery Coffee", "price": "₹17.00" }
+            "Special Varieties (With Milk)": [
+                { "name": "Chai Elaichi Wali", "price": "₹27" },
+                { "name": "Cinnamon Royal Tea", "price": "₹27" },
+                { "name": "Irani Rose Premium Tea", "price": "₹27" },
+                { "name": "Indian Tea with Vanilla", "price": "₹27" }
             ],
-            "Fresh Juice": [
-                { "name": "Fresh Orange Juice", "price": "₹35.00" },
-                { "name": "Lemon Soda", "price": "₹37.00" },
-                { "name": "Lemon Juice", "price": "₹16.00" },
-                { "name": "Pineapple Juice", "price": "₹35.00" },
-                { "name": "Papaya Juice", "price": "₹35.00" },
-                { "name": "Mixed Fruit Juice", "price": "₹35.00" },
-                { "name": "Mosambi Juice", "price": "₹35.00" },
-                { "name": "Musk Melon Juice", "price": "₹35.00" },
-                { "name": "Grape Juice", "price": "₹35.00" },
-                { "name": "Water Melon Juice", "price": "₹35.00" },
-                { "name": "Fruit Lassi", "price": "₹45.00" }
+            "Pure Herb Tea Varieties": [
+                { "name": "Immune Tea", "price": "₹28" },
+                { "name": "Refresh Tea", "price": "₹28" },
+                { "name": "Cinnamon Tea with Honey", "price": "₹28" },
+                { "name": "Real Mint with Honey", "price": "₹28" }
             ],
-            "Milk Shake": [
-                { "name": "Guava Milk Shake", "price": "₹47.00" },
-                { "name": "Dragon Fruit Milk Shake", "price": "₹82.00" },
-                { "name": "Dates Milk Shake", "price": "₹64.00" },
-                { "name": "Musk Melon Milk Shake", "price": "₹47.00" },
-                { "name": "Papaya Milkshake", "price": "₹47.00" },
-                { "name": "Chikku Milkshake", "price": "₹47.00" },
-                { "name": "Banana Milkshake", "price": "₹47.00" },
-                { "name": "Strawberry Delight", "price": "₹55.00" }
+            "Cold Beverages": [
+                { "name": "Cold Badam Milk", "price": "₹44" },
+                { "name": "Cold Coffee", "price": "₹60" },
+                { "name": "Jaggery Lassi", "price": "₹35" },
+                { "name": "Butter Milk", "price": "₹16" },
+                { "name": "Fresh Fruit Juices (Seasonal)", "price": "₹55" },
+                { "name": "Fresh Lime Water", "price": "₹16" },
+                { "name": "Fresh Lime with Soda", "price": "₹30" },
+                { "name": "Lemon Soda", "price": "₹30" },
+                { "name": "Sweet Lassi", "price": "₹35" },
+                { "name": "Strawberry Lassi", "price": "₹45" },
+                { "name": "Rose Lassi", "price": "₹45" },
+                { "name": "Mango Lassi (Seasonal)", "price": "₹45" },
+                { "name": "Kokum Juice", "price": "₹45" }
             ],
-            "Lassi": [
-                { "name": "Fruit Lassi", "price": "₹45.00" }
-            ],
-            "Non Veg": [
-                { "name": "Egg Cheese Sandwich", "price": "₹56.00" },
-                { "name": "Chicken Sandwich With Cheese", "price": "₹82.00" },
-                { "name": "Egg Sandwich", "price": "₹45.00" },
-                { "name": "Boiled Egg", "price": "₹12.00" }
-            ],
-            "Non-Veg Bakery Items": [
-                { "name": "Fruit Cake", "price": "₹47.00" },
-                { "name": "Dates Walnut", "price": "₹47.00" },
-                { "name": "Banana Walnut", "price": "₹47.00" },
-                { "name": "Chocolate Donut", "price": "₹42.00" },
-                { "name": "Chocolate Muffin", "price": "₹42.00" }
-            ]
+            // "Bakery Products": [
+            //     { "name": "Veg Puff", "price": "₹30" },
+            //     { "name": "Samosa", "price": "₹30" },
+            //     { "name": "Sugar / Choco Doughnut", "price": "₹30" },
+            //     { "name": "Veg Burger", "price": "₹58" },
+            //     { "name": "Honey Cake", "price": "₹32" },
+            //     { "name": "Banana Cake", "price": "₹52" }
+            // ]
         };
 
         // Current cart state
         let cartData = { items: [], lastUpdated: Date.now(), visibleCategories: {} };
         let userName = sessionStorage.getItem('userName') || '';
+        let currentSearchQuery = '';
+
+        // --- Fuzzy Search ---
+
+        // Levenshtein distance between two strings
+        function levenshtein(a, b) {
+            const m = a.length;
+            const n = b.length;
+            const dp = [];
+            for (let i = 0; i <= m; i++) {
+                dp[i] = [i];
+            }
+            for (let j = 0; j <= n; j++) {
+                dp[0][j] = j;
+            }
+            for (let i = 1; i <= m; i++) {
+                for (let j = 1; j <= n; j++) {
+                    if (a[i - 1] === b[j - 1]) {
+                        dp[i][j] = dp[i - 1][j - 1];
+                    } else {
+                        dp[i][j] = 1 + Math.min(dp[i - 1][j], dp[i][j - 1], dp[i - 1][j - 1]);
+                    }
+                }
+            }
+            return dp[m][n];
+        }
+
+        // Check if any word in the item is close to any search word
+        function fuzzyWordMatch(itemName, query) {
+            const itemWords = itemName.toLowerCase().split(/\s+/);
+            const queryWords = query.toLowerCase().split(/\s+/);
+            let totalScore = 0;
+            let matchedWords = 0;
+
+            for (let qi = 0; qi < queryWords.length; qi++) {
+                const qw = queryWords[qi];
+                if (qw.length === 0) continue;
+                let bestDist = Infinity;
+                for (let ii = 0; ii < itemWords.length; ii++) {
+                    const iw = itemWords[ii];
+                    // Substring match on the word
+                    if (iw.includes(qw)) {
+                        bestDist = 0;
+                        break;
+                    }
+                    // Also check if query word is close to start of item word
+                    const sub = iw.substring(0, qw.length);
+                    const dist = levenshtein(qw, sub);
+                    if (dist < bestDist) bestDist = dist;
+                    // Full word distance
+                    const fullDist = levenshtein(qw, iw);
+                    if (fullDist < bestDist) bestDist = fullDist;
+                }
+                // Allow more tolerance for longer words
+                const threshold = qw.length <= 3 ? 1 : Math.floor(qw.length / 3);
+                if (bestDist <= threshold) {
+                    matchedWords++;
+                    totalScore += bestDist;
+                }
+            }
+
+            const totalQueryWords = queryWords.filter(w => w.length > 0).length;
+            if (totalQueryWords === 0) return null;
+
+            // All query words must match
+            if (matchedWords < totalQueryWords) return null;
+
+            return { score: totalScore, isFuzzy: totalScore > 0 };
+        }
+
+        // Search menu items, returns filtered menuData structure + metadata
+        function searchMenu(query) {
+            query = query.trim();
+            if (!query) return { data: menuData, resultCount: -1 };
+
+            const results = {};
+            let resultCount = 0;
+            const queryLower = query.toLowerCase();
+
+            for (const [category, items] of Object.entries(menuData)) {
+                const matchedItems = [];
+                for (let i = 0; i < items.length; i++) {
+                    const item = items[i];
+                    const nameLower = item.name.toLowerCase();
+
+                    // Direct substring match (highest priority)
+                    if (nameLower.includes(queryLower)) {
+                        matchedItems.push({ ...item, _score: 0, _fuzzy: false });
+                        continue;
+                    }
+
+                    // Fuzzy word-level match
+                    const match = fuzzyWordMatch(item.name, query);
+                    if (match) {
+                        matchedItems.push({ ...item, _score: match.score, _fuzzy: match.isFuzzy });
+                    }
+                }
+
+                // Sort by score (exact matches first)
+                matchedItems.sort((a, b) => a._score - b._score);
+
+                if (matchedItems.length > 0) {
+                    results[category] = matchedItems;
+                    resultCount += matchedItems.length;
+                }
+            }
+
+            return { data: results, resultCount };
+        }
+
+        function clearSearch() {
+            const input = document.getElementById('search-input');
+            input.value = '';
+            currentSearchQuery = '';
+            document.getElementById('search-clear').style.display = 'none';
+            document.getElementById('search-info').textContent = '';
+            renderMenu(menuData);
+        }
+
+        function handleSearch() {
+            const query = document.getElementById('search-input').value;
+            const clearBtn = document.getElementById('search-clear');
+            const infoEl = document.getElementById('search-info');
+            currentSearchQuery = query.trim();
+
+            clearBtn.style.display = query ? 'block' : 'none';
+
+            const { data, resultCount } = searchMenu(query);
+
+            if (resultCount === -1) {
+                // No query, show full menu
+                infoEl.textContent = '';
+                renderMenu(menuData);
+                return;
+            }
+
+            if (resultCount === 0) {
+                infoEl.textContent = '';
+                const container = document.getElementById('menu-container');
+                container.innerHTML = '<div class="no-results"><h3>No items found</h3><p>Try a different search term</p></div>';
+                return;
+            }
+
+            // Check if any results are fuzzy
+            let hasFuzzy = false;
+            for (const items of Object.values(data)) {
+                for (let i = 0; i < items.length; i++) {
+                    if (items[i]._fuzzy) { hasFuzzy = true; break; }
+                }
+                if (hasFuzzy) break;
+            }
+
+            let info = resultCount + ' item' + (resultCount !== 1 ? 's' : '') + ' found';
+            if (hasFuzzy) {
+                info += ' <span class="fuzzy-tag">~approx</span>';
+            }
+            infoEl.innerHTML = info;
+
+            renderMenu(data);
+        }
 
         // Name modal functions
         function showNameModal() {
@@ -787,163 +1101,271 @@
             return '₹' + num.toFixed(2);
         }
 
-        // Load cart from JSONBin
+        // Load cart from Supabase
         async function loadCart() {
+            if (!supabaseClient) {
+                console.error('Supabase not initialized');
+                return;
+            }
+            
             try {
-                const response = await fetch(`${JSONBIN.BASE_URL}/${JSONBIN.BIN_ID}/latest`, {
-                    headers: {
-                        'X-Master-Key': JSONBIN.API_KEY
+                // Load orders from current_order table
+                const { data: orders, error: ordersError } = await supabaseClient
+                    .from('current_order')
+                    .select('*')
+                    .order('created_at', { ascending: true });
+                
+                if (ordersError) throw ordersError;
+                
+                // Load visible categories from app_settings
+                const { data: settings } = await supabaseClient
+                    .from('app_settings')
+                    .select('visible_categories')
+                    .eq('id', 1)
+                    .single();
+                
+                cartData.visibleCategories = settings?.visible_categories || {};
+                
+                // Group orders by food_name to build cart items
+                const itemsMap = {};
+                (orders || []).forEach(order => {
+                    if (!itemsMap[order.food_name]) {
+                        // Find price from menuData
+                        let price = '₹0';
+                        for (const category of Object.values(menuData)) {
+                            const menuItem = category.find(item => item.name === order.food_name);
+                            if (menuItem) {
+                                price = menuItem.price;
+                                break;
+                            }
+                        }
+                        itemsMap[order.food_name] = {
+                            name: order.food_name,
+                            price: price,
+                            qty: 0,
+                            orders: []
+                        };
                     }
+                    itemsMap[order.food_name].qty += order.quantity;
+                    itemsMap[order.food_name].orders.push({
+                        id: order.id,
+                        user: order.username,
+                        qty: order.quantity,
+                        time: new Date(order.created_at).getTime()
+                    });
                 });
                 
-                if (response.ok) {
-                    const data = await response.json();
-                    cartData = data.record || { items: [], lastUpdated: Date.now(), visibleCategories: {} };
-                    if (!cartData.items) cartData.items = [];
-                    if (!cartData.visibleCategories) cartData.visibleCategories = {};
-                    renderCart();
-                    renderMenu(menuData); // Re-render menu with visibility settings
-                    showStatus('Cart loaded!');
+                cartData.items = Object.values(itemsMap);
+                cartData.lastUpdated = Date.now();
+                
+                renderCart();
+                // Re-render with active search filter if any
+                if (currentSearchQuery) {
+                    handleSearch();
+                } else {
+                    renderMenu(menuData);
                 }
+                showStatus('Cart loaded!');
             } catch (error) {
                 console.error('Error loading cart:', error);
                 showStatus('Error loading cart');
             }
         }
 
-        // Save cart to JSONBin
-        async function saveCart() {
-            try {
-                cartData.lastUpdated = Date.now();
-                const response = await fetch(`${JSONBIN.BASE_URL}/${JSONBIN.BIN_ID}`, {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-Master-Key': JSONBIN.API_KEY
-                    },
-                    body: JSON.stringify(cartData)
-                });
-                
-                if (response.ok) {
-                    showStatus('Cart updated!');
-                }
-            } catch (error) {
-                console.error('Error saving cart:', error);
-                showStatus('Error saving cart');
-            }
-        }
-
         // Add item to cart
         async function addToCart(itemName, price) {
             if (!checkUserName()) return;
-            
-            const existingItem = cartData.items.find(item => item.name === itemName);
-            
-            if (existingItem) {
-                existingItem.qty += 1;
-                // Add user to the orders list
-                if (!existingItem.orders) existingItem.orders = [];
-                existingItem.orders.push({ user: userName, qty: 1, time: Date.now() });
-            } else {
-                cartData.items.push({ 
-                    name: itemName, 
-                    price, 
-                    qty: 1,
-                    orders: [{ user: userName, qty: 1, time: Date.now() }]
-                });
+            if (!supabaseClient) {
+                showStatus('Database not connected');
+                return;
             }
             
-            renderCart();
-            await saveCart();
-            showStatus(`${itemName} added!`);
+            try {
+                // Insert new order row
+                const { error } = await supabaseClient
+                    .from('current_order')
+                    .insert({
+                        username: userName,
+                        food_name: itemName,
+                        quantity: 1
+                    });
+                
+                if (error) throw error;
+                
+                await loadCart();
+                showStatus(`${itemName} added!`);
+            } catch (error) {
+                console.error('Error adding to cart:', error);
+                showStatus('Error adding item');
+            }
         }
 
         // Update item quantity
         async function updateQty(itemName, delta) {
             if (!checkUserName()) return;
+            if (!supabaseClient) {
+                showStatus('Database not connected');
+                return;
+            }
             
             const item = cartData.items.find(i => i.name === itemName);
-            if (item) {
-                item.qty += delta;
-                
-                // Track who made the change
-                if (!item.orders) item.orders = [];
+            if (!item) return;
+            
+            try {
                 if (delta > 0) {
-                    item.orders.push({ user: userName, qty: 1, time: Date.now() });
+                    // Add a new order row for current user
+                    const { error } = await supabaseClient
+                        .from('current_order')
+                        .insert({
+                            username: userName,
+                            food_name: itemName,
+                            quantity: 1
+                        });
+                    if (error) throw error;
                 } else {
-                    // Remove one order from this user if possible
-                    const userOrderIdx = item.orders.findIndex(o => o.user === userName);
-                    if (userOrderIdx !== -1) {
-                        item.orders.splice(userOrderIdx, 1);
-                    } else if (item.orders.length > 0) {
-                        item.orders.pop(); // Remove last order
+                    // Find and delete one of CURRENT USER's orders only
+                    const userOrder = item.orders.find(o => o.user === userName);
+                    
+                    if (userOrder && userOrder.id) {
+                        const { error } = await supabaseClient
+                            .from('current_order')
+                            .delete()
+                            .eq('id', userOrder.id);
+                        if (error) throw error;
+                    } else {
+                        showStatus('No items to remove');
+                        return;
                     }
                 }
                 
-                if (item.qty <= 0) {
-                    cartData.items = cartData.items.filter(i => i.name !== itemName);
-                }
-                renderCart();
-                await saveCart();
+                await loadCart();
+            } catch (error) {
+                console.error('Error updating quantity:', error);
+                showStatus('Error updating cart');
             }
         }
 
         // Render cart
         function renderCart() {
-            const cartItemsEl = document.getElementById('cart-items');
+            const yourCartItemsEl = document.getElementById('your-cart-items');
+            const othersCartItemsEl = document.getElementById('others-cart-items');
             const cartTotalEl = document.getElementById('cart-total');
             const totalAmountEl = document.getElementById('total-amount');
             const cartCountEl = document.getElementById('cart-count');
+            const yourOrdersSection = document.getElementById('your-orders-section');
+            const othersOrdersSection = document.getElementById('others-orders-section');
+            const cartEmptyEl = document.getElementById('cart-empty');
+            const yourTotalEl = document.getElementById('your-total-amount');
+            const othersTotalEl = document.getElementById('others-total-amount');
             
             const totalItems = cartData.items.reduce((sum, item) => sum + item.qty, 0);
             cartCountEl.textContent = totalItems;
             
             if (cartData.items.length === 0) {
-                cartItemsEl.innerHTML = '<div class="cart-empty">Cart is empty</div>';
+                yourOrdersSection.style.display = 'none';
+                othersOrdersSection.style.display = 'none';
+                cartEmptyEl.style.display = 'block';
                 cartTotalEl.style.display = 'none';
                 return;
             }
             
-            let html = '';
-            let total = 0;
+            cartEmptyEl.style.display = 'none';
+            
+            // Separate items into user's orders and others' orders
+            let yourHtml = '';
+            let othersHtml = '';
+            let yourTotal = 0;
+            let othersTotal = 0;
+            let grandTotal = 0;
             
             cartData.items.forEach(item => {
-                const itemTotal = parsePrice(item.price) * item.qty;
-                total += itemTotal;
+                const itemPrice = parsePrice(item.price);
                 
-                // Build names list
-                let namesHtml = '';
-                if (item.orders && item.orders.length > 0) {
-                    // Group orders by user
-                    const userCounts = {};
-                    item.orders.forEach(o => {
-                        userCounts[o.user] = (userCounts[o.user] || 0) + 1;
-                    });
-                    const namesBadges = Object.entries(userCounts).map(([user, count]) => {
-                        const isMe = user === userName ? ' me' : '';
-                        return `<span class="name-badge${isMe}">${user}${count > 1 ? ' ×' + count : ''}</span>`;
-                    }).join('');
-                    namesHtml = `<div class="cart-item-names">${namesBadges}</div>`;
+                // Count user's quantity for this item
+                let userQty = 0;
+                let othersQty = 0;
+                const userOrders = [];
+                const othersOrders = [];
+                
+                item.orders.forEach(order => {
+                    if (order.user === userName) {
+                        userQty += order.qty;
+                        userOrders.push(order);
+                    } else {
+                        othersQty += order.qty;
+                        othersOrders.push(order);
+                    }
+                });
+                
+                // Render user's items with controls
+                if (userQty > 0) {
+                    const userItemTotal = itemPrice * userQty;
+                    yourTotal += userItemTotal;
+                    
+                    yourHtml += `
+                        <div class="cart-item">
+                            <div class="cart-item-info">
+                                <div class="cart-item-name">${item.name}</div>
+                                <div class="cart-item-price">${item.price} × ${userQty} = ${formatPrice(userItemTotal)}</div>
+                            </div>
+                            <div class="cart-item-qty">
+                                <button class="qty-btn" onclick="updateQty('${item.name}', -1)">−</button>
+                                <span>${userQty}</span>
+                                <button class="qty-btn" onclick="updateQty('${item.name}', 1)">+</button>
+                            </div>
+                        </div>
+                    `;
                 }
                 
-                html += `
-                    <div class="cart-item">
-                        <div class="cart-item-info">
-                            <div class="cart-item-name">${item.name}</div>
-                            <div class="cart-item-price">${item.price} × ${item.qty}</div>
-                            ${namesHtml}
+                // Render others' items as read-only
+                if (othersQty > 0) {
+                    const othersItemTotal = itemPrice * othersQty;
+                    othersTotal += othersItemTotal;
+                    
+                    // Build names list for others
+                    const userCounts = {};
+                    othersOrders.forEach(o => {
+                        userCounts[o.user] = (userCounts[o.user] || 0) + o.qty;
+                    });
+                    const namesBadges = Object.entries(userCounts).map(([user, count]) => {
+                        return `<span class="name-badge">${user}${count > 1 ? ' ×' + count : ''}</span>`;
+                    }).join('');
+                    
+                    othersHtml += `
+                        <div class="cart-item cart-item-readonly">
+                            <div class="cart-item-info">
+                                <div class="cart-item-name">${item.name}</div>
+                                <div class="cart-item-price">${item.price} × ${othersQty} = ${formatPrice(othersItemTotal)}</div>
+                                <div class="cart-item-names">${namesBadges}</div>
+                            </div>
+                            <div class="cart-item-qty">${othersQty}</div>
                         </div>
-                        <div class="cart-item-qty">
-                            <button class="qty-btn" onclick="updateQty('${item.name}', -1)">−</button>
-                            <span>${item.qty}</span>
-                            <button class="qty-btn" onclick="updateQty('${item.name}', 1)">+</button>
-                        </div>
-                    </div>
-                `;
+                    `;
+                }
             });
             
-            cartItemsEl.innerHTML = html;
-            totalAmountEl.textContent = formatPrice(total);
+            grandTotal = yourTotal + othersTotal;
+            
+            // Update Your Orders section
+            if (yourHtml) {
+                yourCartItemsEl.innerHTML = yourHtml;
+                yourTotalEl.textContent = formatPrice(yourTotal);
+                yourOrdersSection.style.display = 'block';
+            } else {
+                yourOrdersSection.style.display = 'none';
+            }
+            
+            // Update Others' Orders section
+            if (othersHtml) {
+                othersCartItemsEl.innerHTML = othersHtml;
+                othersTotalEl.textContent = formatPrice(othersTotal);
+                othersOrdersSection.style.display = 'block';
+            } else {
+                othersOrdersSection.style.display = 'none';
+            }
+            
+            // Update grand total
+            totalAmountEl.textContent = formatPrice(grandTotal);
             cartTotalEl.style.display = 'flex';
         }
 
@@ -952,12 +1374,12 @@
             const container = document.getElementById('menu-container');
             container.innerHTML = '';
 
-            let hasVisibleCategories = false;
+            let hasVisibleCategories = true;
 
             for (const [category, items] of Object.entries(data)) {
                 // Check if category is visible (default to true if not set)
-                const isVisible = cartData.visibleCategories[category] !== false;
-                if (!isVisible) continue;
+                // const isVisible = cartData.visibleCategories[category] !== false;
+                // if (!isVisible) continue;
 
                 hasVisibleCategories = true;
                 const categoryDiv = document.createElement('div');
@@ -973,23 +1395,23 @@
 
                 items.forEach(item => {
                     const box = document.createElement('div');
-                    box.className = 'item-box';
+                    box.className = 'item-box' + (item._fuzzy ? ' search-highlight' : '');
 
                     const name = document.createElement('div');
                     name.className = 'item-name';
                     name.textContent = item.name;
 
-                    const price = document.createElement('div');
-                    price.className = 'item-price';
-                    price.textContent = item.price;
+                    // const price = document.createElement('div');
+                    // price.className = 'item-price';
+                    // price.textContent = item.price;
 
                     const addBtn = document.createElement('button');
                     addBtn.className = 'add-btn';
-                    addBtn.textContent = '+ Add';
+                    addBtn.textContent = 'Add +1';
                     addBtn.onclick = () => addToCart(item.name, item.price);
 
                     box.appendChild(name);
-                    box.appendChild(price);
+                    // box.appendChild(price);
                     box.appendChild(addBtn);
                     grid.appendChild(box);
                 });
@@ -1005,6 +1427,14 @@
 
         // Initialize on page load
         document.addEventListener('DOMContentLoaded', async () => {
+            // Render menu immediately (don't block on Supabase)
+            renderMenu(menuData);
+
+            
+            // Setup search input listener
+            const searchInput = document.getElementById('search-input');
+            searchInput.addEventListener('input', handleSearch);
+
             // Setup name input listener
             const nameInput = document.getElementById('name-input');
             nameInput.addEventListener('input', updateSaveButton);
@@ -1021,8 +1451,13 @@
                 updateUserGreeting();
             }
             
-            renderMenu(menuData);
-            await loadCart();
+            // Initialize Supabase and load cart
+            if (initSupabase()) {
+                await loadCart();
+            } else {
+                console.error('Supabase library not loaded');
+                showStatus('Error: Could not connect to database');
+            }
         });
     </script>
 </body>
